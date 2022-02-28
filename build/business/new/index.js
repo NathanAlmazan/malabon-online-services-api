@@ -1,0 +1,32 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const approve_1 = __importDefault(require("./services/approve"));
+const claimPermit_1 = __importDefault(require("./services/claimPermit"));
+const register_1 = __importDefault(require("./services/register"));
+const zoning_1 = __importDefault(require("./services/zoning"));
+let businessRegister = express_1.default.Router();
+const zoneService = new zoning_1.default();
+const registerService = new register_1.default();
+const approveService = new approve_1.default();
+const claimPermitService = new claimPermit_1.default();
+businessRegister.post('/zone/get', zoneService.getZoneClassByLocation);
+businessRegister.get('/zone/initialize', zoneService.initializeRecord);
+businessRegister.post('/form/submit', registerService.submitForm);
+businessRegister.get('/form/search/:id', registerService.getSubmittedForm);
+businessRegister.get('/applications', registerService.getUserApplications);
+businessRegister.get('/approve/forms', approveService.getFormsToApprove);
+businessRegister.post('/approve/add', approveService.addApproval);
+businessRegister.post('/approve/tax', approveService.setTaxOrderOfPayment);
+businessRegister.get('/approve/treasury', approveService.getTreasuryForms);
+businessRegister.get('/approve/approved', approveService.getApprovedForms);
+businessRegister.post('/approve/fire/track/:businessId', approveService.setFireTrackingNumber);
+businessRegister.get('/official/progress', approveService.getOfficialProgress);
+businessRegister.post('/appointment', claimPermitService.setClaimSchedule);
+businessRegister.get('/appointment/:paymentId', claimPermitService.setFinishedAppointment);
+businessRegister.get('/applications/claim', claimPermitService.getFormsForClaim);
+exports.default = businessRegister;
+//# sourceMappingURL=index.js.map
