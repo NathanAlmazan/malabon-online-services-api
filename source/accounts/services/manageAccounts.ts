@@ -46,7 +46,7 @@ class ManageAccounts {
             const verificationToken = jwt.sign({ uid: newAccount.uid },
                 process.env.SECRET_KEY as string, { algorithm: 'HS256', expiresIn: '24h' });
     
-            const redirectUrl = process.env.BACKEND_HOST + "/users/verify/" + verificationToken;
+            const redirectUrl = process.env.BACKEND_HOST + "/accounts/verify/" + verificationToken;
             await sendEmail(email, 'Malabon Online Portal Email Verfication', userName, redirectUrl);
 
             return res.status(201).json({ account: registerAccount });

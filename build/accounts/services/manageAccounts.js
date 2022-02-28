@@ -44,7 +44,7 @@ class ManageAccounts {
                 });
                 const registerAccount = yield accountModel.createAccount(firstName, lastName, email, newAccount.uid, gender, middleName, phoneNumber);
                 const verificationToken = jsonwebtoken_1.default.sign({ uid: newAccount.uid }, process.env.SECRET_KEY, { algorithm: 'HS256', expiresIn: '24h' });
-                const redirectUrl = process.env.BACKEND_HOST + "/users/verify/" + verificationToken;
+                const redirectUrl = process.env.BACKEND_HOST + "/accounts/verify/" + verificationToken;
                 yield (0, config_1.default)(email, 'Malabon Online Portal Email Verfication', userName, redirectUrl);
                 return res.status(201).json({ account: registerAccount });
             }
