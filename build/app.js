@@ -13,7 +13,7 @@ const new_1 = __importDefault(require("./business/new"));
 const authentication_1 = __importDefault(require("./config/authentication"));
 const payments_1 = __importDefault(require("./payments"));
 const corsOptions = {
-    origin: ['http://192.168.0.106:3000', 'http://localhost:3000']
+    origin: ['http://192.168.0.106:3000', 'http://localhost:3000', 'https://malabon.vercel.app']
 };
 const app = (0, express_1.default)();
 dotenv_1.default.config();

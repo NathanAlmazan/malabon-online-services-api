@@ -13,9 +13,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const globalErrors_1 = __importDefault(require("../../../globalErrors"));
-const businessOverlays_1 = __importDefault(require("../InitialData/businessOverlays"));
-const businessTypes_1 = __importDefault(require("../InitialData/businessTypes"));
-const zoneClassifications_1 = __importDefault(require("../InitialData/zoneClassifications"));
 const zoningBounderies_1 = __importDefault(require("../InitialData/zoningBounderies"));
 const zoneModel_1 = __importDefault(require("../models/zoneModel"));
 const zoneModel = new zoneModel_1.default();
@@ -50,20 +47,12 @@ class Zoning {
     initializeRecord(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                zoneClassifications_1.default.forEach((zone) => __awaiter(this, void 0, void 0, function* () { return yield zoneModel.createZoneClassification(zone.Code, zone["Base Zone"]); }));
-                businessOverlays_1.default.forEach((overlay) => __awaiter(this, void 0, void 0, function* () { return yield zoneModel.createZoneOverlay(overlay.Code, overlay.Overlay); }));
-                businessTypes_1.default.forEach((type) => __awaiter(this, void 0, void 0, function* () {
-                    const zoneClass = yield zoneModel.getZoneClassByCode(type.Zone);
+                for (let x = 0; x < zoningBounderies_1.default.length; x++) {
+                    const zoneClass = yield zoneModel.getZoneClassByCode(zoningBounderies_1.default[x]["ZONE CODE"]);
                     if (zoneClass) {
-                        yield zoneModel.createBusinessTypes(type.Business, zoneClass.zoneId);
+                        yield zoneModel.createZoneBoundary(zoneClass.zoneId, 1, zoningBounderies_1.default[x].STREET, zoningBounderies_1.default[x].BARANGAY);
                     }
-                }));
-                zoningBounderies_1.default.forEach((boundary) => __awaiter(this, void 0, void 0, function* () {
-                    const zoneClass = yield zoneModel.getZoneClassByCode(boundary["ZONE CODE"]);
-                    if (zoneClass) {
-                        yield zoneModel.createZoneBoundary(zoneClass.zoneId, 1, boundary.STREET, boundary.BARANGAY);
-                    }
-                }));
+                }
                 return res.status(201).json({ message: "Initialized database successfully." });
             }
             catch (error) {

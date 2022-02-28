@@ -44,20 +44,12 @@ class Zoning {
     async initializeRecord(req: Request, res: Response, next: NextFunction) {
         try {
 
-            zones.forEach(async (zone) => await zoneModel.createZoneClassification(zone.Code, zone["Base Zone"]));
-            overlays.forEach(async (overlay) => await zoneModel.createZoneOverlay(overlay.Code, overlay.Overlay));
-            businessTypes.forEach(async (type) => {
-                const zoneClass = await zoneModel.getZoneClassByCode(type.Zone);
+            for (let x = 0; x < boundaries.length; x++) {
+                const zoneClass = await zoneModel.getZoneClassByCode(boundaries[x]["ZONE CODE"]);
                 if (zoneClass) {
-                    await zoneModel.createBusinessTypes(type.Business, zoneClass.zoneId);
+                    await zoneModel.createZoneBoundary(zoneClass.zoneId, 1, boundaries[x].STREET, boundaries[x].BARANGAY);
                 }
-            });
-            boundaries.forEach(async (boundary) => {
-                const zoneClass = await zoneModel.getZoneClassByCode(boundary["ZONE CODE"]);
-                if (zoneClass) {
-                    await zoneModel.createZoneBoundary(zoneClass.zoneId, 1, boundary.STREET, boundary.BARANGAY);
-                }
-            })
+            }
 
             return res.status(201).json({ message: "Initialized database successfully." })
 

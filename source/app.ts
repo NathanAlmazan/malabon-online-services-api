@@ -9,7 +9,7 @@ import checkCredentials from './config/authentication';
 import paymentRouter from './payments';
 
 const corsOptions = {
-    origin: ['http://192.168.0.106:3000', 'http://localhost:3000']
+    origin: ['http://192.168.0.106:3000', 'http://localhost:3000', 'https://malabon.vercel.app']
 }
 
 const app = express();
