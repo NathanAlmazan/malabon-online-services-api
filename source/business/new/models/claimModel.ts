@@ -25,14 +25,15 @@ class ClaimModel {
         return finishAppointment;
     }
 
-    async approvedBusiness(businessId: number, certificateId: string) {
+    async approvedBusiness(businessId: number, certificateId: string, certificateFile?: string) {
         const approvedBusiness = await prismaClient.businessRegistry.update({
             where: {
                 businessId: businessId
             },
             data: {
                 approved: true,
-                certificateId: certificateId
+                certificateId: certificateId,
+                certificateFile: certificateFile
             }
         })
 

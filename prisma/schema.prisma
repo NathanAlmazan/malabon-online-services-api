@@ -91,6 +91,7 @@ model BusinessRegistry {
   rented             Boolean              @default(false)
   submittedAt        DateTime             @default(now()) @db.Timestamptz(6)
   certificateId      String?              @db.VarChar(20)
+  certificateFile    String?              @db.VarChar(200)
   approved           Boolean              @default(false)
   archived           Boolean              @default(false)
   trackNumber        Int?

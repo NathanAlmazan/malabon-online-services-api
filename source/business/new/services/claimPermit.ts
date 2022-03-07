@@ -9,6 +9,7 @@ class ClaimPermit {
         const businessId: number | undefined = req.body.businessId;
         const schedule: string | undefined = req.body.schedule;
         const certificateId: string | undefined = req.body.certificateId;
+        const certificateFile: string | undefined = req.body.certificateFile;
 
         if (!businessId || !schedule || !certificateId) {
             const nullArgumentError = new GlobalErrors.NullArgumentError("Business ID and valid Payment ID is required.");
@@ -17,7 +18,7 @@ class ClaimPermit {
 
         try {
             const claimSchedule = await claimModel.setAppointment(businessId, new Date(schedule));
-            await claimModel.approvedBusiness(businessId, certificateId);
+            await claimModel.approvedBusiness(businessId, certificateId, certificateFile);
             
             return res.status(201).json(claimSchedule);
         } catch (error) {
