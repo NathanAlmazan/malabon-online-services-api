@@ -1,6 +1,4 @@
-import { PrismaClient } from "@prisma/client";
-
-const dataClient = new PrismaClient();
+import prismaClient from "../../../config/prismaClient";
 
 export type Registration = "DTI" | "SEC" | "CDA";
 export type Organization = "sole proprietorship" | "partnership" | "corporation" | "cooperative";
@@ -81,7 +79,7 @@ class RegisterModel {
 
     async saveRegistrationForm(formData: RegisterFormInterface, userId: number) {
 
-        const registeredBusiness = await dataClient.businessRegistry.create({
+        const registeredBusiness = await prismaClient.businessRegistry.create({
             data: {
                 registrationNumber: formData.registrationNumber,
                 TIN: formData.TIN,
@@ -132,7 +130,7 @@ class RegisterModel {
         });
 
         if (formData.owner.address) {
-            const ownerAddress = await dataClient.businessAdresses.create({
+            const ownerAddress = await prismaClient.businessAdresses.create({
                 data: {
                     bldgNumber: formData.owner.address.bldgNumber,
                     street: formData.owner.address.street,
@@ -147,7 +145,7 @@ class RegisterModel {
                 }
             });
 
-            await dataClient.businessOwners.create({
+            await prismaClient.businessOwners.create({
                 data: {
                     surname: formData.owner.surname,
                     middleName: formData.owner.middleName,
@@ -174,7 +172,7 @@ class RegisterModel {
             owner: false
         }))
 
-        await dataClient.businessOwners.createMany({
+        await prismaClient.businessOwners.createMany({
             data: partners
         })
 
@@ -182,7 +180,7 @@ class RegisterModel {
     }
 
     async getRegistrationForm(registrationId: number) {
-        const registrationForm = await dataClient.businessRegistry.findUnique({
+        const registrationForm = await prismaClient.businessRegistry.findUnique({
             where: {
                 businessId: registrationId
             },
@@ -232,7 +230,7 @@ class RegisterModel {
     }
 
     async updateRegistrationForm(registrationId: number, updatedForm: RegisterFormInterface, userId: number) {
-        await dataClient.businessRegistry.delete({
+        await prismaClient.businessRegistry.delete({
             where: {
                 businessId: registrationId,
             }
@@ -242,7 +240,7 @@ class RegisterModel {
     }
     
     async archiveRegistrationForm(registrationId: number) {
-        await dataClient.businessRegistry.update({
+        await prismaClient.businessRegistry.update({
             where: {
                 businessId: registrationId,
             },
@@ -253,7 +251,7 @@ class RegisterModel {
     }
 
     async restoreRegistrationForm(registrationId: number) {
-        await dataClient.businessRegistry.update({
+        await prismaClient.businessRegistry.update({
             where: {
                 businessId: registrationId,
             },
@@ -264,7 +262,7 @@ class RegisterModel {
     }
 
     async getUserApplications(userId: number) {
-        const userApplications = await dataClient.businessRegistry.findMany({
+        const userApplications = await prismaClient.businessRegistry.findMany({
             where: {
                 AND: {
                     userId: userId
