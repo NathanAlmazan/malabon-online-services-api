@@ -21,13 +21,14 @@ class ClaimPermit {
             const businessId = req.body.businessId;
             const schedule = req.body.schedule;
             const certificateId = req.body.certificateId;
+            const certificateFile = req.body.certificateFile;
             if (!businessId || !schedule || !certificateId) {
                 const nullArgumentError = new globalErrors_1.default.NullArgumentError("Business ID and valid Payment ID is required.");
                 return next(nullArgumentError);
             }
             try {
                 const claimSchedule = yield claimModel.setAppointment(businessId, new Date(schedule));
-                yield claimModel.approvedBusiness(businessId, certificateId);
+                yield claimModel.approvedBusiness(businessId, certificateId, certificateFile);
                 return res.status(201).json(claimSchedule);
             }
             catch (error) {

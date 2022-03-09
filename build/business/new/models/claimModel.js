@@ -38,7 +38,7 @@ class ClaimModel {
             return finishAppointment;
         });
     }
-    approvedBusiness(businessId, certificateId) {
+    approvedBusiness(businessId, certificateId, certificateFile) {
         return __awaiter(this, void 0, void 0, function* () {
             const approvedBusiness = yield prismaClient_1.default.businessRegistry.update({
                 where: {
@@ -46,7 +46,8 @@ class ClaimModel {
                 },
                 data: {
                     approved: true,
-                    certificateId: certificateId
+                    certificateId: certificateId,
+                    certificateFile: certificateFile
                 }
             });
             return approvedBusiness;
