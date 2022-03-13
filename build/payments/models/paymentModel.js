@@ -67,6 +67,19 @@ class PaymentModel {
             return confirmedPayment;
         });
     }
+    confirmPaymentRenew(renewId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const confirmedPayment = yield prismaClient_1.default.businessRenewal.update({
+                where: {
+                    renewalId: renewId
+                },
+                data: {
+                    completed: true
+                }
+            });
+            return confirmedPayment;
+        });
+    }
     getBankReceiptForms() {
         return __awaiter(this, void 0, void 0, function* () {
             const businessess = yield prismaClient_1.default.businessRegistry.findMany({
@@ -124,6 +137,27 @@ class PaymentModel {
                     approvals: true,
                     addresses: true,
                     payments: true
+                }
+            });
+            return forms;
+        });
+    }
+    getRenewRequestsForVerification() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const forms = yield prismaClient_1.default.businessRenewal.findMany({
+                where: {
+                    AND: {
+                        completed: false,
+                        payments: {
+                            some: {
+                                paid: true
+                            }
+                        }
+                    }
+                },
+                include: {
+                    payments: true,
+                    business: true
                 }
             });
             return forms;

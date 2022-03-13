@@ -21,7 +21,9 @@ model Accounts {
   superuser             Boolean            @default(false)
   officer               Boolean            @default(false)
   approvals             BusinessApproval[]
+  renewals              RenewalApproval[]
   businessRegistrations BusinessRegistry[]
+  businessRenewals      BusinessRenewal[]
   roles                 Roles[]
 }
 
@@ -105,6 +107,7 @@ model BusinessRegistry {
   payments           BusinessPayments[]
   services           BusinessServices[]
   files              Files[]
+  renewal            BusinessRenewal[]
 }
 
 model BusinessOwners {
@@ -193,8 +196,11 @@ model BusinessPayments {
   receipt       String?          @db.VarChar(200)
   rejected      Boolean          @default(false)
   rejectMessage String?          @db.VarChar(200)
-  businessId    Int
-  business      BusinessRegistry @relation(fields: [businessId], references: [businessId], onDelete: SetNull)
+  businessId    Int?
+  renewalId     Int?
+  renewal       BusinessRenewal?  @relation(fields: [renewalId], references: [renewalId], onDelete: SetNull)
+  business      BusinessRegistry? @relation(fields: [businessId], references: [businessId], onDelete: SetNull)
+
 }
 
 model BusinessAppointment {
@@ -203,4 +209,40 @@ model BusinessAppointment {
   schedule      DateTime
   claimed       Boolean          @default(false)
   business      BusinessRegistry @relation(fields: [businessId], references: [businessId], onDelete: SetNull)
+}
+
+model BusinessRenewal {
+  renewalId     Int               @id @default(autoincrement())
+  businessId    Int?               
+  business      BusinessRegistry? @relation(fields: [businessId], references: [businessId])
+  permitNumber  String?           @db.VarChar(20)
+  receiptNumber String?           @db.VarChar(20)
+  receiptFile   String?           @db.VarChar(200)
+  renewAt       DateTime          @default(now()) @db.Timestamptz(6)
+  completed     Boolean           @default(false)
+  businessName  String?  
+  topFile       String?
+  certificateId      String?      @db.VarChar(20)
+  certificateFile    String?      @db.VarChar(200)
+  appointment        DateTime?
+  quarterly     Boolean           @default(false)      
+  accountId     Int               
+  userAccount   Accounts             @relation(fields: [accountId], references: [userId], onDelete: SetNull)  
+  approvals     RenewalApproval[]
+  payments      BusinessPayments[]
+}
+
+model RenewalApproval {
+  approvalId   Int              @id @default(autoincrement())
+  renewalId    Int
+  approved     Boolean          @default(false)
+  approvalType String           @db.VarChar(50)
+  approvedAt   DateTime         @default(now()) @db.Timestamptz(6)
+  officialId   Int
+  remarks      String?          @db.VarChar(255)
+  required     Boolean          @default(true)
+  approvalFee  Decimal?         @db.Decimal(12, 2)
+  renewalTop   String?          @db.VarChar(200)
+  official     Accounts         @relation(fields: [officialId], references: [userId], onDelete: SetNull)
+  business     BusinessRenewal  @relation(fields: [renewalId], references: [renewalId], onDelete: SetNull)
 }

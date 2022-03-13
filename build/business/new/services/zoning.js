@@ -13,6 +13,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const globalErrors_1 = __importDefault(require("../../../globalErrors"));
+const businessOverlays_1 = __importDefault(require("../InitialData/businessOverlays"));
+const businessTypes_1 = __importDefault(require("../InitialData/businessTypes"));
+const zoneClassifications_1 = __importDefault(require("../InitialData/zoneClassifications"));
 const zoningBounderies_1 = __importDefault(require("../InitialData/zoningBounderies"));
 const zoneModel_1 = __importDefault(require("../models/zoneModel"));
 const zoneModel = new zoneModel_1.default();
@@ -47,6 +50,18 @@ class Zoning {
     initializeRecord(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                for (let x = 0; x < zoneClassifications_1.default.length; x++) {
+                    yield zoneModel.createZoneClassification(zoneClassifications_1.default[x].Code, zoneClassifications_1.default[x]["Base Zone"]);
+                }
+                for (let x = 0; x < businessOverlays_1.default.length; x++) {
+                    yield zoneModel.createZoneOverlay(businessOverlays_1.default[x].Code, businessOverlays_1.default[x].Overlay);
+                }
+                for (let x = 0; x < businessTypes_1.default.length; x++) {
+                    const zoneClass = yield zoneModel.getZoneClassByCode(businessTypes_1.default[x].Zone);
+                    if (zoneClass) {
+                        yield zoneModel.createBusinessTypes(businessTypes_1.default[x].Business, zoneClass.zoneId);
+                    }
+                }
                 for (let x = 0; x < zoningBounderies_1.default.length; x++) {
                     const zoneClass = yield zoneModel.getZoneClassByCode(zoningBounderies_1.default[x]["ZONE CODE"]);
                     if (zoneClass) {

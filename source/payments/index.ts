@@ -11,5 +11,8 @@ paymentRouter.post('/business/bank', businessPayments.paymentWithBankReceipt);
 paymentRouter.get('/business/bank/confirm/:paymentId', businessPayments.confirmBankPayment);
 paymentRouter.post('/reject', businessPayments.rejectPayment);
 paymentRouter.get('/business/verify', businessPayments.getPaymentsToVerify);
+paymentRouter.post('/renew/paypal', businessPayments.paymentWithPaypalRenew);
+paymentRouter.get('/renew/verify', businessPayments.getPaymentsToVerifyRenew);
+paymentRouter.get('/renew/bank/confirm/:paymentId', businessPayments.confirmBankPaymentRenew);
 
 export default paymentRouter;

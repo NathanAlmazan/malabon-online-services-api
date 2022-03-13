@@ -68,6 +68,33 @@ class BusinessPayments {
             }
         });
     }
+    paymentWithPaypalRenew(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const paymentId = req.body.paymentId;
+            const paymentNonce = req.body.paymentNonce;
+            const amount = req.body.amount;
+            const deviceData = req.body.deviceData;
+            if (!paymentId || !paymentNonce || !amount || !deviceData) {
+                const nullArgumentError = new globalErrors_1.default.NullArgumentError("Incomplete arguments.");
+                return next(nullArgumentError);
+            }
+            try {
+                const taxBill = yield paymentModel.getPaymentBill(paymentId);
+                if (!taxBill) {
+                    const notFoundError = new globalErrors_1.default.NotFoundError("Tax Order of Payment not found.");
+                    return next(notFoundError);
+                }
+                const paypalPayment = yield paypalModel.paypalCheckout(taxBill.amount.toFixed(2), paymentNonce, deviceData);
+                const savePayment = yield paymentModel.uploadPaypalPayent(paymentId, paypalPayment);
+                const confirmPayment = yield paymentModel.confirmPaymentRenew(savePayment.renewalId);
+                return res.status(200).json({ transactionId: paypalPayment, business: confirmPayment });
+            }
+            catch (error) {
+                const internalError = new globalErrors_1.default.InternalError(error.message);
+                return next(internalError);
+            }
+        });
+    }
     confirmBankPayment(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             const paymentId = parseInt(req.params.paymentId);
@@ -82,6 +109,28 @@ class BusinessPayments {
                     return next(notFoundError);
                 }
                 const confirmPayment = yield paymentModel.confirmPayment(taxBill.businessId);
+                return res.status(200).json({ receipt: taxBill.receipt, business: confirmPayment });
+            }
+            catch (error) {
+                const internalError = new globalErrors_1.default.InternalError(error.message);
+                return next(internalError);
+            }
+        });
+    }
+    confirmBankPaymentRenew(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const paymentId = parseInt(req.params.paymentId);
+            if (isNaN(paymentId)) {
+                const nullArgumentError = new globalErrors_1.default.NullArgumentError("Invalid payment ID.");
+                return next(nullArgumentError);
+            }
+            try {
+                const taxBill = yield paymentModel.getPaymentBill(paymentId);
+                if (!taxBill) {
+                    const notFoundError = new globalErrors_1.default.NotFoundError("Tax Order of Payment not found.");
+                    return next(notFoundError);
+                }
+                const confirmPayment = yield paymentModel.confirmPaymentRenew(taxBill.renewalId);
                 return res.status(200).json({ receipt: taxBill.receipt, business: confirmPayment });
             }
             catch (error) {
@@ -124,6 +173,18 @@ class BusinessPayments {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const forms = yield paymentModel.getFormsForVerification();
+                return res.status(200).json(forms);
+            }
+            catch (error) {
+                const internalError = new globalErrors_1.default.InternalError(error.message);
+                return next(internalError);
+            }
+        });
+    }
+    getPaymentsToVerifyRenew(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const forms = yield paymentModel.getRenewRequestsForVerification();
                 return res.status(200).json(forms);
             }
             catch (error) {

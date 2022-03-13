@@ -8,17 +8,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RegisterFormKeys = void 0;
-const client_1 = require("@prisma/client");
-const dataClient = new client_1.PrismaClient();
+const prismaClient_1 = __importDefault(require("../../../config/prismaClient"));
 exports.RegisterFormKeys = ['registrationNumber', 'TIN', 'businessName', 'tradeName', 'telephone', 'mobile', 'email', 'website', 'orgType', 'quarterPayment',
     'filipinoEmployees', 'foreignEmployees', 'businessArea', 'totalFloors', 'maleEmployees', 'femaleEmployees', 'totalEmployees', 'lguEmployees',
     'deliveryUnits', 'activity', 'capital', 'taxIncentive', 'rented', 'mainOffice', 'businessAddress', 'owner', 'partners', 'services', 'files'];
 class RegisterModel {
     saveRegistrationForm(formData, userId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const registeredBusiness = yield dataClient.businessRegistry.create({
+            const registeredBusiness = yield prismaClient_1.default.businessRegistry.create({
                 data: {
                     registrationNumber: formData.registrationNumber,
                     TIN: formData.TIN,
@@ -68,7 +70,7 @@ class RegisterModel {
                 }
             });
             if (formData.owner.address) {
-                const ownerAddress = yield dataClient.businessAdresses.create({
+                const ownerAddress = yield prismaClient_1.default.businessAdresses.create({
                     data: {
                         bldgNumber: formData.owner.address.bldgNumber,
                         street: formData.owner.address.street,
@@ -82,7 +84,7 @@ class RegisterModel {
                         addressId: true
                     }
                 });
-                yield dataClient.businessOwners.create({
+                yield prismaClient_1.default.businessOwners.create({
                     data: {
                         surname: formData.owner.surname,
                         middleName: formData.owner.middleName,
@@ -106,7 +108,7 @@ class RegisterModel {
                 businessId: registeredBusiness.businessId,
                 owner: false
             }));
-            yield dataClient.businessOwners.createMany({
+            yield prismaClient_1.default.businessOwners.createMany({
                 data: partners
             });
             return registeredBusiness.businessId;
@@ -114,7 +116,7 @@ class RegisterModel {
     }
     getRegistrationForm(registrationId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const registrationForm = yield dataClient.businessRegistry.findUnique({
+            const registrationForm = yield prismaClient_1.default.businessRegistry.findUnique({
                 where: {
                     businessId: registrationId
                 },
@@ -164,7 +166,7 @@ class RegisterModel {
     }
     updateRegistrationForm(registrationId, updatedForm, userId) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield dataClient.businessRegistry.delete({
+            yield prismaClient_1.default.businessRegistry.delete({
                 where: {
                     businessId: registrationId,
                 }
@@ -174,7 +176,7 @@ class RegisterModel {
     }
     archiveRegistrationForm(registrationId) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield dataClient.businessRegistry.update({
+            yield prismaClient_1.default.businessRegistry.update({
                 where: {
                     businessId: registrationId,
                 },
@@ -186,7 +188,7 @@ class RegisterModel {
     }
     restoreRegistrationForm(registrationId) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield dataClient.businessRegistry.update({
+            yield prismaClient_1.default.businessRegistry.update({
                 where: {
                     businessId: registrationId,
                 },
@@ -198,7 +200,7 @@ class RegisterModel {
     }
     getUserApplications(userId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const userApplications = yield dataClient.businessRegistry.findMany({
+            const userApplications = yield prismaClient_1.default.businessRegistry.findMany({
                 where: {
                     AND: {
                         userId: userId

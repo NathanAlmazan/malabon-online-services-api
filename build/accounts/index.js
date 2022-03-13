@@ -21,7 +21,7 @@ accounts.get('/admin/search', authentication_1.default, manageAdmin.getAdminAcco
 accounts.post('/admin/create', authentication_1.default, manageAdmin.createAdminAccount);
 accounts.post('/admin/update', authentication_1.default, manageAdmin.updateAdminAccount);
 accounts.get('/admin/remove/:uid', authentication_1.default, manageAdmin.removeAdminAccount);
-accounts.get('/superuser/create/:uid', authentication_1.default, manageAdmin.createSuperuserAccount);
+accounts.get('/superuser/create/:uid', manageAdmin.createSuperuserAccount);
 accounts.get('/superuser/remove/:uid', authentication_1.default, manageAdmin.removeSuperuserAccount);
 accounts.get('/manage/:email', authentication_1.default, manageAdmin.manageAccounts);
 exports.default = accounts;

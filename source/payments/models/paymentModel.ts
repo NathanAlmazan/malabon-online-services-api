@@ -58,6 +58,19 @@ class PaymentModel {
         return confirmedPayment;
     }
 
+    async confirmPaymentRenew(renewId: number) {
+        const confirmedPayment = await prismaClient.businessRenewal.update({
+            where: {
+                renewalId: renewId
+            },
+            data: {
+                completed: true
+            }
+        })
+
+        return confirmedPayment;
+    }
+
     async getBankReceiptForms() {
         const businessess = await prismaClient.businessRegistry.findMany({
             where: {
@@ -120,6 +133,27 @@ class PaymentModel {
                 approvals: true,
                 addresses: true,
                 payments: true
+            }
+        })
+
+        return forms;
+    }
+
+    async getRenewRequestsForVerification() {
+        const forms = await prismaClient.businessRenewal.findMany({
+            where: {
+                AND: {
+                    completed: false, 
+                    payments: {
+                        some: {
+                            paid: true
+                        }
+                    }
+                }
+            },
+            include: {
+                payments: true,
+                business: true
             }
         })
 

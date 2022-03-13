@@ -55,7 +55,38 @@ class BusinessPayments {
 
             const paypalPayment = await paypalModel.paypalCheckout(taxBill.amount.toFixed(2), paymentNonce, deviceData);
             const savePayment = await paymentModel.uploadPaypalPayent(paymentId, paypalPayment);
-            const confirmPayment = await paymentModel.confirmPayment(savePayment.businessId);
+            const confirmPayment = await paymentModel.confirmPayment(savePayment.businessId as number);
+
+            return res.status(200).json({ transactionId: paypalPayment, business: confirmPayment });
+
+        } catch (error) {
+            const internalError = new GlobalErrors.InternalError((error as Error).message);
+            return next(internalError);
+        }
+    }
+
+    async paymentWithPaypalRenew(req: Request, res: Response, next: NextFunction) {
+        const paymentId: number | undefined = req.body.paymentId;
+        const paymentNonce: string | undefined = req.body.paymentNonce;
+        const amount: number | undefined = req.body.amount;
+        const deviceData: string | undefined = req.body.deviceData;
+
+        if (!paymentId || !paymentNonce || !amount || !deviceData) {
+            const nullArgumentError = new GlobalErrors.NullArgumentError("Incomplete arguments.");
+            return next(nullArgumentError);
+        }
+
+        try {
+            const taxBill = await paymentModel.getPaymentBill(paymentId);
+
+            if (!taxBill) {
+                const notFoundError = new GlobalErrors.NotFoundError("Tax Order of Payment not found.");
+                return next(notFoundError);
+            }
+
+            const paypalPayment = await paypalModel.paypalCheckout(taxBill.amount.toFixed(2), paymentNonce, deviceData);
+            const savePayment = await paymentModel.uploadPaypalPayent(paymentId, paypalPayment);
+            const confirmPayment = await paymentModel.confirmPaymentRenew(savePayment.renewalId as number);
 
             return res.status(200).json({ transactionId: paypalPayment, business: confirmPayment });
 
@@ -81,7 +112,33 @@ class BusinessPayments {
                 return next(notFoundError);
             }
 
-            const confirmPayment = await paymentModel.confirmPayment(taxBill.businessId);
+            const confirmPayment = await paymentModel.confirmPayment(taxBill.businessId as number);
+
+            return res.status(200).json({ receipt: taxBill.receipt, business: confirmPayment });
+
+        } catch (error) {
+            const internalError = new GlobalErrors.InternalError((error as Error).message);
+            return next(internalError);
+        }
+    }
+
+    async confirmBankPaymentRenew(req: Request, res: Response, next: NextFunction) {
+        const paymentId = parseInt(req.params.paymentId);
+
+        if (isNaN(paymentId)) {
+            const nullArgumentError = new GlobalErrors.NullArgumentError("Invalid payment ID.");
+            return next(nullArgumentError);
+        }
+
+        try {
+            const taxBill = await paymentModel.getPaymentBill(paymentId);
+
+            if (!taxBill) {
+                const notFoundError = new GlobalErrors.NotFoundError("Tax Order of Payment not found.");
+                return next(notFoundError);
+            }
+
+            const confirmPayment = await paymentModel.confirmPaymentRenew(taxBill.renewalId as number);
 
             return res.status(200).json({ receipt: taxBill.receipt, business: confirmPayment });
 
@@ -124,6 +181,17 @@ class BusinessPayments {
     async getPaymentsToVerify(req: Request, res: Response, next: NextFunction) {
         try {
             const forms = await paymentModel.getFormsForVerification();
+
+            return res.status(200).json(forms);
+        } catch (error) {
+            const internalError = new GlobalErrors.InternalError((error as Error).message);
+            return next(internalError);
+        }
+    }
+
+    async getPaymentsToVerifyRenew(req: Request, res: Response, next: NextFunction) {
+        try {
+            const forms = await paymentModel.getRenewRequestsForVerification();
 
             return res.status(200).json(forms);
         } catch (error) {

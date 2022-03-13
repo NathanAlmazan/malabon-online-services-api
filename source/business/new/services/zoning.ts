@@ -44,6 +44,21 @@ class Zoning {
     async initializeRecord(req: Request, res: Response, next: NextFunction) {
         try {
 
+            for (let x = 0; x < zones.length; x++) {
+                await zoneModel.createZoneClassification(zones[x].Code, zones[x]["Base Zone"]);
+            }
+
+            for (let x = 0; x < overlays.length; x++) {
+                await zoneModel.createZoneOverlay(overlays[x].Code, overlays[x].Overlay);
+            }
+
+            for (let x = 0; x < businessTypes.length; x++) {
+                const zoneClass = await zoneModel.getZoneClassByCode(businessTypes[x].Zone);
+                if (zoneClass) {
+                    await zoneModel.createBusinessTypes(businessTypes[x].Business, zoneClass.zoneId);
+                }
+            }
+
             for (let x = 0; x < boundaries.length; x++) {
                 const zoneClass = await zoneModel.getZoneClassByCode(boundaries[x]["ZONE CODE"]);
                 if (zoneClass) {

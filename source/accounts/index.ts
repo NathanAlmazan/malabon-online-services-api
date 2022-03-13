@@ -20,7 +20,7 @@ accounts.get('/admin/search', checkCredentials, manageAdmin.getAdminAccount);
 accounts.post('/admin/create', checkCredentials, manageAdmin.createAdminAccount);
 accounts.post('/admin/update', checkCredentials, manageAdmin.updateAdminAccount);
 accounts.get('/admin/remove/:uid', checkCredentials, manageAdmin.removeAdminAccount);
-accounts.get('/superuser/create/:uid', checkCredentials, manageAdmin.createSuperuserAccount);
+accounts.get('/superuser/create/:uid', manageAdmin.createSuperuserAccount);
 accounts.get('/superuser/remove/:uid', checkCredentials, manageAdmin.removeSuperuserAccount);
 accounts.get('/manage/:email', checkCredentials, manageAdmin.manageAccounts);
 
