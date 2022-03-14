@@ -21,7 +21,7 @@ model Accounts {
   superuser             Boolean            @default(false)
   officer               Boolean            @default(false)
   approvals             BusinessApproval[]
-  renewals              RenewalApproval[]
+  notifications         Notifications[]
   businessRegistrations BusinessRegistry[]
   businessRenewals      BusinessRenewal[]
   roles                 Roles[]
@@ -93,7 +93,7 @@ model BusinessRegistry {
   rented             Boolean              @default(false)
   submittedAt        DateTime             @default(now()) @db.Timestamptz(6)
   certificateId      String?              @db.VarChar(20)
-  certificateFile    String?              @db.VarChar(200)
+  certificateFile    String?              @db.VarChar(255)
   approved           Boolean              @default(false)
   archived           Boolean              @default(false)
   trackNumber        Int?
@@ -223,26 +223,19 @@ model BusinessRenewal {
   businessName  String?  
   topFile       String?
   certificateId      String?      @db.VarChar(20)
-  certificateFile    String?      @db.VarChar(200)
+  certificateFile    String?      @db.VarChar(255)
   appointment        DateTime?
   quarterly     Boolean           @default(false)      
   accountId     Int               
-  userAccount   Accounts             @relation(fields: [accountId], references: [userId], onDelete: SetNull)  
-  approvals     RenewalApproval[]
+  userAccount   Accounts          @relation(fields: [accountId], references: [userId], onDelete: SetNull)  
   payments      BusinessPayments[]
 }
 
-model RenewalApproval {
-  approvalId   Int              @id @default(autoincrement())
-  renewalId    Int
-  approved     Boolean          @default(false)
-  approvalType String           @db.VarChar(50)
-  approvedAt   DateTime         @default(now()) @db.Timestamptz(6)
-  officialId   Int
-  remarks      String?          @db.VarChar(255)
-  required     Boolean          @default(true)
-  approvalFee  Decimal?         @db.Decimal(12, 2)
-  renewalTop   String?          @db.VarChar(200)
-  official     Accounts         @relation(fields: [officialId], references: [userId], onDelete: SetNull)
-  business     BusinessRenewal  @relation(fields: [renewalId], references: [renewalId], onDelete: SetNull)
+model Notifications {
+  notifId       Int             @id @default(autoincrement())
+  notifSubject  String          @db.VarChar(100)
+  notifDesc     String          @db.VarChar(200)
+  read          Boolean         @default(false)
+  userId        Int             
+  account       Accounts        @relation(fields: [userId], references: [userId], onDelete: SetNull)  
 }

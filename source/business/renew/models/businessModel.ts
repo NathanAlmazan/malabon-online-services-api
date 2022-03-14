@@ -61,22 +61,6 @@ class BusinessRenewal {
         return businessRenewal;
     }
 
-    async createRenewalApproval(accountId: number, renewalId: number, approved: boolean, required: boolean, type: Departement, remarks?: string, tax?: string) {
-        const renewalApproval = await prismaClient.renewalApproval.create({
-            data: {
-                approvalType: type,
-                renewalId: renewalId,
-                approved: approved,
-                required: required,
-                officialId: accountId,
-                remarks: remarks,
-                renewalTop: tax
-            }
-        })
-
-        return renewalApproval;
-    }
-
     async getRenewalToApprove() {
         const businessRenew = await prismaClient.businessRenewal.findMany({
             where: {

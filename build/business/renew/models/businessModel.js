@@ -73,22 +73,6 @@ class BusinessRenewal {
             return businessRenewal;
         });
     }
-    createRenewalApproval(accountId, renewalId, approved, required, type, remarks, tax) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const renewalApproval = yield prismaClient_1.default.renewalApproval.create({
-                data: {
-                    approvalType: type,
-                    renewalId: renewalId,
-                    approved: approved,
-                    required: required,
-                    officialId: accountId,
-                    remarks: remarks,
-                    renewalTop: tax
-                }
-            });
-            return renewalApproval;
-        });
-    }
     getRenewalToApprove() {
         return __awaiter(this, void 0, void 0, function* () {
             const businessRenew = yield prismaClient_1.default.businessRenewal.findMany({

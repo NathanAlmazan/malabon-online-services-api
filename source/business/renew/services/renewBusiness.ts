@@ -72,7 +72,7 @@ class RenewBusiness {
         const quarterPayment: boolean | undefined = req.body.quarterPayment;
         const uid: string = req.user.uid;
 
-        if (isNaN(businessId) || !receiptNumber || !receiptFile || !quarterPayment) {
+        if (isNaN(businessId) || !receiptNumber || !receiptFile || quarterPayment == undefined) {
             const nullArgumentError = new GlobalErrors.NullArgumentError("Invalid parameters.");
             return next(nullArgumentError);
         }
@@ -108,7 +108,7 @@ class RenewBusiness {
         const quarterPayment: boolean | undefined = req.body.quarterPayment;
         const uid: string = req.user.uid;
 
-        if (!permitNumber || !receiptNumber || !receiptFile || !quarterPayment) {
+        if (!permitNumber || !receiptNumber || !receiptFile || quarterPayment == undefined) {
             const nullArgumentError = new GlobalErrors.NullArgumentError("Incomplete parameters.");
             return next(nullArgumentError);
         }
