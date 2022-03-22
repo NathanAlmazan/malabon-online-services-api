@@ -106,6 +106,18 @@ class ZoneModel {
             return businessTypes;
         });
     }
+    getAllBusinessTypes(zone) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const businessTypes = yield prismaClient_1.default.businessTypes.findMany({
+                where: {
+                    NOT: {
+                        zoneId: zone
+                    }
+                }
+            });
+            return businessTypes;
+        });
+    }
 }
 exports.default = ZoneModel;
 //# sourceMappingURL=zoneModel.js.map

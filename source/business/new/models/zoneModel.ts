@@ -86,10 +86,22 @@ class ZoneModel {
         return zoneBoundary;
     } 
 
-    async getBusinessTypesByZone(zone: number) {
+    async getBusinessTypesByZone(zone?: number) {
         const businessTypes = await prismaClient.businessTypes.findMany({
             where: {
                 zoneId: zone
+            }
+        })
+
+        return businessTypes;
+    }
+
+    async getAllBusinessTypes(zone: number) {
+        const businessTypes = await prismaClient.businessTypes.findMany({
+            where: {
+                NOT: {
+                    zoneId: zone
+                }
             }
         })
 

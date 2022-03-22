@@ -120,7 +120,7 @@ class ManageAdmin {
                 }
                 if (!adminAccount.officer)
                     return res.status(400).json({ message: "Account is not an admin." });
-                const departments = ["OLBO", "CHO", "CENRO", "OCMA", "BFP", "PZO", "TRSY", "BPLO"];
+                const departments = ["OLBO", "CHO", "CENRO", "OCMA", "BFP", "PZO", "TRSY", "BPLO", "FENCING", "ARCHITECTURAL", "STRUCTURAL", "ELECTRICAL", "MECHANICAL", "SANITARY", "PLUMBING", "INTERIOR", "ELECTRONICS"];
                 const adminRoles = adminAccount.superuser ? departments : adminAccount.roles.map(role => role.role);
                 return res.status(201).json({ adminAccount: adminAccount, roles: adminRoles });
             }

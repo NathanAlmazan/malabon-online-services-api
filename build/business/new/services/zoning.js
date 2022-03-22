@@ -31,14 +31,30 @@ class Zoning {
             try {
                 const zoneBoundary = yield zoneModel.getZoneByLocation(street, barangay);
                 if (!zoneBoundary) {
-                    const notFoundError = new globalErrors_1.default.NotFoundError("Cannot classify location.");
-                    return next(notFoundError);
+                    const businessTypes = yield zoneModel.getBusinessTypesByZone();
+                    return res.status(200).json({
+                        zone: null,
+                        overlay: null,
+                        businessTypes: businessTypes
+                    });
                 }
                 const businessTypes = yield zoneModel.getBusinessTypesByZone(zoneBoundary.zoneId);
+                const allBusinessTypes = yield zoneModel.getAllBusinessTypes(zoneBoundary.zoneId);
+                let finalBusinessTypes = [];
+                businessTypes.forEach(businessType => {
+                    const finalType = businessType;
+                    finalType.approved = true;
+                    finalBusinessTypes.push(finalType);
+                });
+                allBusinessTypes.forEach(businessType => {
+                    const finalType = businessType;
+                    finalType.approved = false;
+                    finalBusinessTypes.push(finalType);
+                });
                 return res.status(200).json({
                     zone: zoneBoundary.zone,
                     overlay: zoneBoundary.zoneOverlay,
-                    businessTypes: businessTypes
+                    businessTypes: finalBusinessTypes
                 });
             }
             catch (error) {

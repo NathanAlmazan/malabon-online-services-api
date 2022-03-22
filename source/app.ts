@@ -8,6 +8,7 @@ import businessRegister from './business/new';
 import checkCredentials from './config/authentication';
 import paymentRouter from './payments';
 import renewRoute from './business/renew';
+import buildingRoute from './building';
 
 const corsOptions = {
     origin: ['http://192.168.0.106:3000', 'http://localhost:3000', 'https://malabon.vercel.app']
@@ -26,6 +27,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/accounts', accounts);
 app.use('/business/new',checkCredentials, businessRegister);
 app.use('/business/renew', checkCredentials, renewRoute);
+app.use('/building', checkCredentials, buildingRoute);
 app.use('/payments', checkCredentials, paymentRouter);
 
 

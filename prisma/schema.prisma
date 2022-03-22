@@ -24,6 +24,8 @@ model Accounts {
   notifications         Notifications[]
   businessRegistrations BusinessRegistry[]
   businessRenewals      BusinessRenewal[]
+  buildingPermits       BuildingPermit[]
+  buildingApprovals     BuildingApproval[]
   roles                 Roles[]
 }
 
@@ -238,4 +240,85 @@ model Notifications {
   read          Boolean         @default(false)
   userId        Int             
   account       Accounts        @relation(fields: [userId], references: [userId], onDelete: SetNull)  
+}
+
+model BuildingPermit {
+  buildingId          Int             @id @default(autoincrement())
+  totalFloorArea      Decimal         @db.Decimal(7, 2)
+  estimatedCost       Decimal         @db.Decimal(12, 2)
+  proposedDate        DateTime
+  dateOfCompletion    DateTime
+  occupancyClassified String          @db.VarChar(200)
+  numberOfUnits       Int         
+  surname             String          @db.VarChar(255)
+  givenName           String          @db.VarChar(255)
+  middleName          String          @db.VarChar(255)
+  suffix              String?         @db.VarChar(255)
+  gender              String          @db.VarChar(20)
+  citizenship         String?         @db.VarChar(200)
+  bldgNumber          String          @db.VarChar(255)
+  street              String          @db.VarChar(255)
+  barangay            String          @db.VarChar(255)
+  city                String          @db.VarChar(255)
+  province            String          @db.VarChar(255)
+  postalCode          Int
+  scopeOfWork         String          @db.VarChar(255)
+  buildingUse         String          @db.VarChar(255)
+  engineer            String          @db.VarChar(255)
+  latitude            Decimal?         @db.Decimal(11, 7)
+  longitude           Decimal?         @db.Decimal(11, 7)
+  approved            Boolean          @default(false)   
+  topFile             String?          @db.VarChar(255)
+  trackNumber         Int?
+  releaseDate         DateTime?
+  certificateFile     String?          @db.VarChar(255)
+  userId              Int
+  quarterPayment      Boolean           @default(false)
+  submittedAt         DateTime ?        @default(now()) @db.Timestamptz(6)
+  userAccount         Accounts          @relation(fields: [userId], references: [userId], onDelete: SetNull)          
+  files               BuildingFiles[]
+  approvals           BuildingApproval[]
+  payments            BuildingPayments[]
+}
+
+model BuildingFiles {
+  fileId       Int              @id @default(autoincrement())   
+  buildingId   Int
+  fileName     String           @db.VarChar(150)
+  fileURL      String           @db.VarChar(255)
+  documentType String           @db.VarChar(50)
+  submittedAt  DateTime         @default(now()) @db.Timestamptz(6)
+  building     BuildingPermit   @relation(fields: [buildingId], references: [buildingId], onDelete: Cascade)
+}
+
+model BuildingApproval {
+  approvalId   Int              @id @default(autoincrement())
+  buildingId   Int
+  approved     Boolean          @default(false)
+  approvalType String           @db.VarChar(50)
+  approvedAt   DateTime         @default(now()) @db.Timestamptz(6)
+  officialId   Int
+  remarks      String?          @db.VarChar(255)
+  required     Boolean          @default(true)
+  approvalFee  Decimal?         @db.Decimal(12, 2)
+  building     BuildingPermit   @relation(fields: [buildingId], references: [buildingId], onDelete: Cascade)
+  official     Accounts         @relation(fields: [officialId], references: [userId], onDelete: SetNull)
+
+  @@index([buildingId], map: "building_approval_building_id")
+}
+
+model BuildingPayments {
+  paymentId     Int              @id @default(autoincrement())
+  amount        Decimal          @db.Decimal(12, 2)
+  paid          Boolean          @default(false)
+  issuedAt      DateTime         @default(now()) @db.Timestamptz(6)
+  transactionId String?          @db.VarChar(200)
+  paidAt        DateTime?
+  receipt       String?          @db.VarChar(200)
+  rejected      Boolean          @default(false)
+  rejectMessage String?          @db.VarChar(200)
+  buildingId    Int
+  building     BuildingPermit   @relation(fields: [buildingId], references: [buildingId], onDelete: Cascade)
+
+  @@index([buildingId], map: "building_payment_building_id")
 }

@@ -5,6 +5,11 @@ import businessTypes from "../InitialData/businessTypes";
 import zones from "../InitialData/zoneClassifications";
 import boundaries from "../InitialData/zoningBounderies";
 import ZoneModel from "../models/zoneModel";
+import { BusinessTypes } from "@prisma/client";
+
+interface AllBusinessTypes extends BusinessTypes {
+    approved?: boolean;
+}
 
 const zoneModel = new ZoneModel();
 
@@ -23,16 +28,38 @@ class Zoning {
             const zoneBoundary = await zoneModel.getZoneByLocation(street, barangay);
 
             if (!zoneBoundary) {
-                const notFoundError = new GlobalErrors.NotFoundError("Cannot classify location.");
-                return next(notFoundError);
+                const businessTypes = await zoneModel.getBusinessTypesByZone();
+
+                return res.status(200).json({
+                    zone: null,
+                    overlay: null,
+                    businessTypes: businessTypes
+                });
             }
 
             const businessTypes = await zoneModel.getBusinessTypesByZone(zoneBoundary.zoneId);
+            const allBusinessTypes = await zoneModel.getAllBusinessTypes(zoneBoundary.zoneId);
+
+            let finalBusinessTypes: AllBusinessTypes[] = [];
+
+            businessTypes.forEach(businessType => {
+                const finalType: AllBusinessTypes = businessType;
+                finalType.approved = true;
+
+                finalBusinessTypes.push(finalType);
+            })
+
+            allBusinessTypes.forEach(businessType => {
+                const finalType: AllBusinessTypes = businessType;
+                finalType.approved = false;
+
+                finalBusinessTypes.push(finalType);
+            })
 
             return res.status(200).json({
                 zone: zoneBoundary.zone,
                 overlay: zoneBoundary.zoneOverlay,
-                businessTypes: businessTypes
+                businessTypes: finalBusinessTypes
             });
 
         } catch (error) {
