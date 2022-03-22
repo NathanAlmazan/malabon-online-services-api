@@ -13,8 +13,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const globalErrors_1 = __importDefault(require("../../../globalErrors"));
+const notificationModel_1 = __importDefault(require("../../../notifications/notificationModel"));
 const claimModel_1 = __importDefault(require("../models/claimModel"));
 const claimModel = new claimModel_1.default();
+const notifService = new notificationModel_1.default();
 class ClaimPermit {
     setClaimSchedule(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -28,7 +30,8 @@ class ClaimPermit {
             }
             try {
                 const claimSchedule = yield claimModel.setAppointment(businessId, new Date(schedule));
-                yield claimModel.approvedBusiness(businessId, certificateId, certificateFile);
+                const claimedBusiness = yield claimModel.approvedBusiness(businessId, certificateId, certificateFile);
+                yield notifService.createNotification("New Business", `Your new business permit for ${claimedBusiness.businessName} is ready to claim.`, claimedBusiness.userId);
                 return res.status(201).json(claimSchedule);
             }
             catch (error) {

@@ -126,6 +126,9 @@ class ApprovalModel {
                 remarks: remarks,
                 officialId: accountId,
                 businessId: businessId
+            },
+            include: {
+                business: true
             }
         })
 
@@ -152,6 +155,9 @@ class ApprovalModel {
                     fileName:  "Tax Order of Payment",
                     fileURL: fileURL,
                     businessId: businessId
+                },
+                include: {
+                    business: true
                 }
             })
     

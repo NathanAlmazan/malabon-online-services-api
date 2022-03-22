@@ -1,12 +1,14 @@
 import { NextFunction, Request, Response } from "express";
 import AdminModel from "../../accounts/models/adminModel";
 import GlobalErrors from "../../globalErrors";
+import NotificationModel from "../../notifications/notificationModel";
 import BuildingApprovalModel from "../models/approvalModel";
 import ClaimModel from "../models/claimModel";
 
 const approveModel = new BuildingApprovalModel();
 const adminModel = new AdminModel();
 const claimModel = new ClaimModel();
+const notifService = new NotificationModel();
 
 export const superUserRoles = ["FENCING", "ARCHITECTURAL", "STRUCTURAL", "ELECTRICAL", "MECHANICAL", "BFP", "SANITARY", "PLUMBING", "INTERIOR", "ELECTRONICS", "TRSY"];
 
@@ -78,7 +80,9 @@ class BuildingApproveService {
 
         try {
 
-            const approval = approveModel.createApproval(adminRoles.userId, buildingId, approved, required, type, fee, remarks);
+            const approval = await approveModel.createApproval(adminRoles.userId, buildingId, approved, required, type, fee, remarks);
+            await notifService.createNotification("Building Permit", `${type} department approved your building plam`, approval.building.userId);
+
             return res.status(201).json({ approval: approval });
 
         } catch (error) {
@@ -120,7 +124,14 @@ class BuildingApproveService {
         try {
 
             await approveModel.setTotalTax(buildingId, tax);
-            const taxOrderOfPayment = approveModel.saveTaxOrderFile(buildingId, fileURL);
+            const taxOrderOfPayment = await approveModel.saveTaxOrderFile(buildingId, fileURL);
+
+            if (!taxOrderOfPayment) {
+                const notFoundError = new GlobalErrors.NotFoundError("Building not found.");
+                return next(notFoundError);
+            }
+
+            await notifService.createNotification("Building Permit", `Your Tax Order of Payment is posted.`, taxOrderOfPayment.building.userId);
 
             return res.status(200).json({ taxOrderOfPayment: taxOrderOfPayment });
 
@@ -161,6 +172,7 @@ class BuildingApproveService {
         try {
             const claimSchedule = await claimModel.setAppointment(buildingId, new Date(schedule));
             await claimModel.approvedBusiness(buildingId, certificateFile);
+            await notifService.createNotification("Building Permit", `Your building permit is ready to claim.`, claimSchedule.userId);
             
             return res.status(201).json(claimSchedule);
         } catch (error) {

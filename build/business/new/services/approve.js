@@ -14,9 +14,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const adminModel_1 = __importDefault(require("../../../accounts/models/adminModel"));
 const globalErrors_1 = __importDefault(require("../../../globalErrors"));
+const notificationModel_1 = __importDefault(require("../../../notifications/notificationModel"));
 const approvalModel_1 = __importDefault(require("../models/approvalModel"));
 const approvalModel = new approvalModel_1.default();
 const adminModel = new adminModel_1.default();
+const notifService = new notificationModel_1.default();
 const superUserRoles = ["OLBO", "CHO", "CENRO", "OCMA", "BFP", "TRSY", "PZO"];
 class Approve {
     getFormsToApprove(req, res, next) {
@@ -72,7 +74,8 @@ class Approve {
                 return next(unauthorizedError);
             }
             try {
-                const approval = approvalModel.createApproval(adminRoles.userId, businessId, approved, required, type, fee, remarks);
+                const approval = yield approvalModel.createApproval(adminRoles.userId, businessId, approved, required, type, fee, remarks);
+                yield notifService.createNotification("New Business Approval", `${type} department approved your new business, ${approval.business.businessName}.`, approval.business.userId);
                 return res.status(201).json({ approval: approval });
             }
             catch (error) {
@@ -107,7 +110,12 @@ class Approve {
             }
             try {
                 yield approvalModel.setTotalTax(businessId, tax);
-                const taxOrderOfPayment = approvalModel.saveTaxOrderFile(businessId, fileURL);
+                const taxOrderOfPayment = yield approvalModel.saveTaxOrderFile(businessId, fileURL);
+                if (!taxOrderOfPayment) {
+                    const notFoundError = new globalErrors_1.default.NotFoundError("Request not found.");
+                    return next(notFoundError);
+                }
+                yield notifService.createNotification("New Business Approval", `Treasury posted Tax Order of Payment for your new business, ${taxOrderOfPayment.business.businessName}.`, taxOrderOfPayment.business.userId);
                 return res.status(200).json({ taxOrderOfPayment: taxOrderOfPayment });
             }
             catch (error) {

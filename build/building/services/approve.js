@@ -15,11 +15,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.superUserRoles = void 0;
 const adminModel_1 = __importDefault(require("../../accounts/models/adminModel"));
 const globalErrors_1 = __importDefault(require("../../globalErrors"));
+const notificationModel_1 = __importDefault(require("../../notifications/notificationModel"));
 const approvalModel_1 = __importDefault(require("../models/approvalModel"));
 const claimModel_1 = __importDefault(require("../models/claimModel"));
 const approveModel = new approvalModel_1.default();
 const adminModel = new adminModel_1.default();
 const claimModel = new claimModel_1.default();
+const notifService = new notificationModel_1.default();
 exports.superUserRoles = ["FENCING", "ARCHITECTURAL", "STRUCTURAL", "ELECTRICAL", "MECHANICAL", "BFP", "SANITARY", "PLUMBING", "INTERIOR", "ELECTRONICS", "TRSY"];
 class BuildingApproveService {
     getFormsToApprove(req, res, next) {
@@ -78,7 +80,8 @@ class BuildingApproveService {
                 return next(unauthorizedError);
             }
             try {
-                const approval = approveModel.createApproval(adminRoles.userId, buildingId, approved, required, type, fee, remarks);
+                const approval = yield approveModel.createApproval(adminRoles.userId, buildingId, approved, required, type, fee, remarks);
+                yield notifService.createNotification("Building Permit", `${type} department approved your building plam`, approval.building.userId);
                 return res.status(201).json({ approval: approval });
             }
             catch (error) {
@@ -113,7 +116,12 @@ class BuildingApproveService {
             }
             try {
                 yield approveModel.setTotalTax(buildingId, tax);
-                const taxOrderOfPayment = approveModel.saveTaxOrderFile(buildingId, fileURL);
+                const taxOrderOfPayment = yield approveModel.saveTaxOrderFile(buildingId, fileURL);
+                if (!taxOrderOfPayment) {
+                    const notFoundError = new globalErrors_1.default.NotFoundError("Building not found.");
+                    return next(notFoundError);
+                }
+                yield notifService.createNotification("Building Permit", `Your Tax Order of Payment is posted.`, taxOrderOfPayment.building.userId);
                 return res.status(200).json({ taxOrderOfPayment: taxOrderOfPayment });
             }
             catch (error) {
@@ -152,6 +160,7 @@ class BuildingApproveService {
             try {
                 const claimSchedule = yield claimModel.setAppointment(buildingId, new Date(schedule));
                 yield claimModel.approvedBusiness(buildingId, certificateFile);
+                yield notifService.createNotification("Building Permit", `Your building permit is ready to claim.`, claimSchedule.userId);
                 return res.status(201).json(claimSchedule);
             }
             catch (error) {

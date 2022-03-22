@@ -39,6 +39,9 @@ class BuildingApprovalModel {
                     remarks: remarks,
                     officialId: accountId,
                     buildingId: building
+                },
+                include: {
+                    building: true
                 }
             });
             return approval;
@@ -64,6 +67,9 @@ class BuildingApprovalModel {
                         fileName: "Tax Order of Payment",
                         fileURL: fileURL,
                         buildingId: buildingId
+                    },
+                    include: {
+                        building: true
                     }
                 });
                 return taxOrderFile;

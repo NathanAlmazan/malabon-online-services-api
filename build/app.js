@@ -14,6 +14,7 @@ const authentication_1 = __importDefault(require("./config/authentication"));
 const payments_1 = __importDefault(require("./payments"));
 const renew_1 = __importDefault(require("./business/renew"));
 const building_1 = __importDefault(require("./building"));
+const notifications_1 = __importDefault(require("./notifications"));
 const corsOptions = {
     origin: ['http://192.168.0.106:3000', 'http://localhost:3000', 'https://malabon.vercel.app']
 };
@@ -29,6 +30,7 @@ app.use('/business/new', authentication_1.default, new_1.default);
 app.use('/business/renew', authentication_1.default, renew_1.default);
 app.use('/building', authentication_1.default, building_1.default);
 app.use('/payments', authentication_1.default, payments_1.default);
+app.use('/notifications', authentication_1.default, notifications_1.default);
 //error handlers
 app.use((err, req, res, next) => {
     console.log(err.stack);

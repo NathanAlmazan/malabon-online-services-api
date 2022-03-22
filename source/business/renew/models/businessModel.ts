@@ -94,6 +94,9 @@ class BusinessRenewal {
             },
             data: {
                 topFile: fileURL
+            },
+            include: {
+                business: true
             }
         })
 

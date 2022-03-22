@@ -1,8 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 import GlobalErrors from "../../../globalErrors";
+import NotificationModel from "../../../notifications/notificationModel";
 import ClaimModel from "../models/claimModel";
 
 const claimModel = new ClaimModel();
+const notifService = new NotificationModel();
 
 class ClaimPermit {
     async setClaimSchedule(req: Request, res: Response, next: NextFunction) {
@@ -18,7 +20,8 @@ class ClaimPermit {
 
         try {
             const claimSchedule = await claimModel.setAppointment(businessId, new Date(schedule));
-            await claimModel.approvedBusiness(businessId, certificateId, certificateFile);
+            const claimedBusiness = await claimModel.approvedBusiness(businessId, certificateId, certificateFile);
+            await notifService.createNotification("New Business", `Your new business permit for ${claimedBusiness.businessName} is ready to claim.`, claimedBusiness.userId);
             
             return res.status(201).json(claimSchedule);
         } catch (error) {

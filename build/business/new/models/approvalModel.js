@@ -111,6 +111,9 @@ class ApprovalModel {
                     remarks: remarks,
                     officialId: accountId,
                     businessId: businessId
+                },
+                include: {
+                    business: true
                 }
             });
             return approval;
@@ -137,6 +140,9 @@ class ApprovalModel {
                         fileName: "Tax Order of Payment",
                         fileURL: fileURL,
                         businessId: businessId
+                    },
+                    include: {
+                        business: true
                     }
                 });
                 return taxOrderFile;

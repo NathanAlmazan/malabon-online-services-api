@@ -5,11 +5,13 @@ import GlobalErrors from "../../../globalErrors";
 import BusinessRenewal from "../models/businessModel";
 import { Departement } from "../../new/models/approvalModel";
 import AdminModel from "../../../accounts/models/adminModel";
+import NotificationModel from "../../../notifications/notificationModel";
 
 const businessModel = new BusinessRenewal();
 const accountModel = new AccountModel();
 const registerModel = new RegisterModel();
 const adminModel = new AdminModel();
+const notifService = new NotificationModel();
 
 const superUserRoles: Departement[] = ["OLBO", "CHO", "CENRO", "OCMA", "BFP", "TRSY", "PZO"];
 
@@ -174,7 +176,14 @@ class RenewBusiness {
         try {
 
             await businessModel.setTotalTax(businessId, tax);
-            const taxOrderOfPayment = businessModel.setTOPFile(businessId, fileURL);
+            const taxOrderOfPayment = await businessModel.setTOPFile(businessId, fileURL);
+
+            if (!taxOrderOfPayment.business) {
+                const notFoundError = new GlobalErrors.NotFoundError("Business not found.");
+                return next(notFoundError);
+            }
+
+            await notifService.createNotification("Business Renewal", `Treasury posted Tax Order of Payment for your business, ${taxOrderOfPayment.business.businessName}.`, taxOrderOfPayment.business.userId);
 
             return res.status(200).json({ taxOrderOfPayment: taxOrderOfPayment });
 
@@ -227,6 +236,7 @@ class RenewBusiness {
 
         try {
             const claimed = await businessModel.setClaimRenewal(renewalId, appointment, certificateFile);
+            await notifService.createNotification("Business Renewal", `Your new business permit for ${claimed.businessName} is ready to claim.`, claimed.accountId);
 
             return res.status(200).json(claimed);
         } catch (error) {

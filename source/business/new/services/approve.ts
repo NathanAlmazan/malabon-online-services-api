@@ -1,10 +1,12 @@
 import { NextFunction, Request, Response } from "express";
 import AdminModel from "../../../accounts/models/adminModel";
 import GlobalErrors from "../../../globalErrors";
+import NotificationModel from "../../../notifications/notificationModel";
 import ApprovalModel, { Departement } from "../models/approvalModel";
 
 const approvalModel = new ApprovalModel();
 const adminModel = new AdminModel();
+const notifService = new NotificationModel();
 
 const superUserRoles: Departement[] = ["OLBO", "CHO", "CENRO", "OCMA", "BFP", "TRSY", "PZO"];
 
@@ -73,7 +75,8 @@ class Approve {
 
         try {
 
-            const approval = approvalModel.createApproval(adminRoles.userId, businessId, approved, required, type, fee, remarks);
+            const approval = await approvalModel.createApproval(adminRoles.userId, businessId, approved, required, type, fee, remarks);
+            await notifService.createNotification("New Business Approval", `${type} department approved your new business, ${approval.business.businessName}.`, approval.business.userId);
             return res.status(201).json({ approval: approval });
 
         } catch (error) {
@@ -115,7 +118,14 @@ class Approve {
         try {
 
             await approvalModel.setTotalTax(businessId, tax);
-            const taxOrderOfPayment = approvalModel.saveTaxOrderFile(businessId, fileURL);
+            const taxOrderOfPayment = await approvalModel.saveTaxOrderFile(businessId, fileURL);
+
+            if (!taxOrderOfPayment) {
+                const notFoundError = new GlobalErrors.NotFoundError("Request not found.");
+                return next(notFoundError);
+            }
+
+            await notifService.createNotification("New Business Approval", `Treasury posted Tax Order of Payment for your new business, ${taxOrderOfPayment.business.businessName}.`, taxOrderOfPayment.business.userId);
 
             return res.status(200).json({ taxOrderOfPayment: taxOrderOfPayment });
 

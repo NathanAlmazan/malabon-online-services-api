@@ -17,10 +17,12 @@ const registerModel_1 = __importDefault(require("../../new/models/registerModel"
 const globalErrors_1 = __importDefault(require("../../../globalErrors"));
 const businessModel_1 = __importDefault(require("../models/businessModel"));
 const adminModel_1 = __importDefault(require("../../../accounts/models/adminModel"));
+const notificationModel_1 = __importDefault(require("../../../notifications/notificationModel"));
 const businessModel = new businessModel_1.default();
 const accountModel = new accountModel_1.default();
 const registerModel = new registerModel_1.default();
 const adminModel = new adminModel_1.default();
+const notifService = new notificationModel_1.default();
 const superUserRoles = ["OLBO", "CHO", "CENRO", "OCMA", "BFP", "TRSY", "PZO"];
 class RenewBusiness {
     getAvailableBusiness(req, res, next) {
@@ -164,7 +166,12 @@ class RenewBusiness {
             }
             try {
                 yield businessModel.setTotalTax(businessId, tax);
-                const taxOrderOfPayment = businessModel.setTOPFile(businessId, fileURL);
+                const taxOrderOfPayment = yield businessModel.setTOPFile(businessId, fileURL);
+                if (!taxOrderOfPayment.business) {
+                    const notFoundError = new globalErrors_1.default.NotFoundError("Business not found.");
+                    return next(notFoundError);
+                }
+                yield notifService.createNotification("Business Renewal", `Treasury posted Tax Order of Payment for your business, ${taxOrderOfPayment.business.businessName}.`, taxOrderOfPayment.business.userId);
                 return res.status(200).json({ taxOrderOfPayment: taxOrderOfPayment });
             }
             catch (error) {
@@ -214,6 +221,7 @@ class RenewBusiness {
             }
             try {
                 const claimed = yield businessModel.setClaimRenewal(renewalId, appointment, certificateFile);
+                yield notifService.createNotification("Business Renewal", `Your new business permit for ${claimed.businessName} is ready to claim.`, claimed.accountId);
                 return res.status(200).json(claimed);
             }
             catch (error) {
