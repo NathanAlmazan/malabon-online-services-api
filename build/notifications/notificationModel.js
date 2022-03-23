@@ -43,7 +43,10 @@ class NotificationModel {
         return __awaiter(this, void 0, void 0, function* () {
             const userNotifications = yield prismaClient_1.default.notifications.findMany({
                 where: {
-                    userId: accountId
+                    AND: {
+                        userId: accountId,
+                        read: false
+                    }
                 }
             });
             return userNotifications;

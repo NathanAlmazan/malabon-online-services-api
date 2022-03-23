@@ -29,7 +29,10 @@ class NotificationModel {
     async getUserNotifications(accountId: number) {
         const userNotifications = await prismaClient.notifications.findMany({
             where: {
-                userId: accountId
+                AND: {
+                    userId: accountId,
+                    read: false
+                }
             }
         })
 

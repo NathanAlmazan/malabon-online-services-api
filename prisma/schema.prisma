@@ -238,6 +238,7 @@ model Notifications {
   notifSubject  String          @db.VarChar(100)
   notifDesc     String          @db.VarChar(200)
   read          Boolean         @default(false)
+  createdAt     DateTime?       @default(now()) @db.Timestamptz(6)
   userId        Int             
   account       Accounts        @relation(fields: [userId], references: [userId], onDelete: SetNull)  
 }

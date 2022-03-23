@@ -5,6 +5,6 @@ let notificationRoute = express.Router();
 const notifServices = new NotificationService();
 
 notificationRoute.get('/user', notifServices.getUserNotifications);
-notificationRoute.get('/read', notifServices.setNotificationAsRead);
+notificationRoute.get('/read/:id', notifServices.setNotificationAsRead);
 
 export default notificationRoute;

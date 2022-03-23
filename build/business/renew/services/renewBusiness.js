@@ -167,11 +167,6 @@ class RenewBusiness {
             try {
                 yield businessModel.setTotalTax(businessId, tax);
                 const taxOrderOfPayment = yield businessModel.setTOPFile(businessId, fileURL);
-                if (!taxOrderOfPayment.business) {
-                    const notFoundError = new globalErrors_1.default.NotFoundError("Business not found.");
-                    return next(notFoundError);
-                }
-                yield notifService.createNotification("Business Renewal", `Treasury posted Tax Order of Payment for your business, ${taxOrderOfPayment.business.businessName}.`, taxOrderOfPayment.business.userId);
                 return res.status(200).json({ taxOrderOfPayment: taxOrderOfPayment });
             }
             catch (error) {

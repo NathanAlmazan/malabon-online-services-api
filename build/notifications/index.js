@@ -8,6 +8,6 @@ const notificationService_1 = __importDefault(require("./notificationService"));
 let notificationRoute = express_1.default.Router();
 const notifServices = new notificationService_1.default();
 notificationRoute.get('/user', notifServices.getUserNotifications);
-notificationRoute.get('/read', notifServices.setNotificationAsRead);
+notificationRoute.get('/read/:id', notifServices.setNotificationAsRead);
 exports.default = notificationRoute;
 //# sourceMappingURL=index.js.map

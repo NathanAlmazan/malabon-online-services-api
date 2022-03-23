@@ -178,13 +178,6 @@ class RenewBusiness {
             await businessModel.setTotalTax(businessId, tax);
             const taxOrderOfPayment = await businessModel.setTOPFile(businessId, fileURL);
 
-            if (!taxOrderOfPayment.business) {
-                const notFoundError = new GlobalErrors.NotFoundError("Business not found.");
-                return next(notFoundError);
-            }
-
-            await notifService.createNotification("Business Renewal", `Treasury posted Tax Order of Payment for your business, ${taxOrderOfPayment.business.businessName}.`, taxOrderOfPayment.business.userId);
-
             return res.status(200).json({ taxOrderOfPayment: taxOrderOfPayment });
 
         } catch (error) {
