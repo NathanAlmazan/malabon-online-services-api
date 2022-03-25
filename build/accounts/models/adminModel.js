@@ -105,6 +105,19 @@ class AdminModel {
             return adminAccount;
         });
     }
+    getAllAdminAccount() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const adminAccount = yield prismaClient_1.default.accounts.findMany({
+                where: {
+                    officer: true
+                },
+                include: {
+                    roles: true,
+                }
+            });
+            return adminAccount;
+        });
+    }
     getAdminApprovals(accountId) {
         return __awaiter(this, void 0, void 0, function* () {
             let curr = new Date;
@@ -115,7 +128,6 @@ class AdminModel {
                     AND: {
                         officialId: accountId,
                         approvedAt: {
-                            gte: new Date(curr.setDate(first)),
                             lte: new Date(curr.setDate(last))
                         }
                     }

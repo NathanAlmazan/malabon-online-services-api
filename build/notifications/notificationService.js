@@ -53,6 +53,24 @@ class NotificationService {
             }
         });
     }
+    getAdminDashboard(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const userUID = req.user.uid;
+            try {
+                const account = yield accountModel.findAccountByUid(userUID);
+                if (!account) {
+                    const notFoundError = new globalErrors_1.default.NotFoundError("Account not found.");
+                    return next(notFoundError);
+                }
+                const notifications = yield notifModel.getWeekRequests(account.userId);
+                return res.status(200).json(notifications);
+            }
+            catch (error) {
+                const internalError = new globalErrors_1.default.InternalError(error.message);
+                return next(internalError);
+            }
+        });
+    }
 }
 exports.default = NotificationService;
 //# sourceMappingURL=notificationService.js.map

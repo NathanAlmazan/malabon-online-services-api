@@ -9,6 +9,7 @@ let buildingRoute = express.Router();
 
 buildingRoute.post('/register', buildingRegisterServices.registerNewBuilding);
 buildingRoute.get('/view/:id', buildingRegisterServices.getSubmittedForm);
+buildingRoute.get('/user/requests', buildingRegisterServices.getUserRequests);
 
 buildingRoute.get('/assess/forms', buildingApproveServices.getFormsToApprove);
 buildingRoute.post('/approval/create', buildingApproveServices.addApproval);

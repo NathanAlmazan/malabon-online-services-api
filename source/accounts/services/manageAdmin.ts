@@ -1,3 +1,4 @@
+import { Accounts } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
 import ApprovalModel from "../../business/new/models/approvalModel";
 import firebaseAdminAuth from "../../config/firebaseAuth";
@@ -233,7 +234,7 @@ class ManageAdmin {
                 return next(notFoundError);
             }
 
-            const departments: Departement[] = ["OLBO", "CHO", "CENRO", "OCMA", "BFP", "PZO", "TRSY", "BPLO"];
+            const departments: string[] = ["OLBO", "CHO", "CENRO", "OCMA", "BFP", "PZO", "TRSY", "BPLO", "FENCING", "ARCHITECTURAL", "STRUCTURAL", "ELECTRICAL", "MECHANICAL", "SANITARY", "PLUMBING", "INTERIOR", "ELECTRONICS"];
             const adminRoles = adminAccount.superuser ? departments : adminAccount.roles.map(role => role.role);
             const assessedForms = await adminModel.getAdminApprovals(adminAccount.userId);
             const forApproval = await approveModel.getWeeklyRequest(adminRoles as Departement[]);
@@ -241,6 +242,38 @@ class ManageAdmin {
             const firebaseUser = await firebaseAdminAuth.getUser(adminAccount.uid);
 
             return res.status(201).json({ adminAccount: adminAccount, roles: adminRoles, assessed: assessedForms.length, forAssess: forApproval.length, image: firebaseUser.photoURL });
+
+        } catch (error) {
+            const internalError = new GlobalErrors.InternalError((error as Error).message);
+            return next(internalError);
+        }
+    }
+
+    async manageAllAdminAccounts(req: Request, res: Response, next: NextFunction) {
+        try {
+            const adminAccount = await adminModel.getAllAdminAccount();
+
+            let admins: {
+                adminAccount: Accounts,
+                roles: any,
+                assessed: number,
+                image: string | undefined
+            }[] = [];
+
+            for (let x=0; x < adminAccount.length; x++) {
+                const currentAccount = adminAccount[x];
+                const departments: string[] = ["OLBO", "CHO", "CENRO", "OCMA", "BFP", "PZO", "TRSY", "BPLO", "FENCING", "ARCHITECTURAL", "STRUCTURAL", "ELECTRICAL", "MECHANICAL", "SANITARY", "PLUMBING", "INTERIOR", "ELECTRONICS"];
+                const adminRoles = currentAccount.superuser ? departments : currentAccount.roles.map(role => role.role);
+                const assessedForms = await adminModel.getAdminApprovals(currentAccount.userId);
+    
+                const firebaseUser = await firebaseAdminAuth.getUser(currentAccount.uid);
+
+                admins.push({
+                    adminAccount: currentAccount, roles: adminRoles, assessed: assessedForms.length, image: firebaseUser.photoURL
+                })
+            }
+
+            return res.status(201).json(admins);
 
         } catch (error) {
             const internalError = new GlobalErrors.InternalError((error as Error).message);

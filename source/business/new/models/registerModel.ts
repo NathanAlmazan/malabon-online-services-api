@@ -276,6 +276,7 @@ class RegisterModel {
                         approved: true,
                         required: true,
                         approvedAt: true,
+                        remarks: true,
                         official: {
                             select: {
                                 firstName: true,

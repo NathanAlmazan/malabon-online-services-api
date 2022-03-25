@@ -24,5 +24,6 @@ accounts.get('/admin/remove/:uid', authentication_1.default, manageAdmin.removeA
 accounts.get('/superuser/create/:uid', manageAdmin.createSuperuserAccount);
 accounts.get('/superuser/remove/:uid', authentication_1.default, manageAdmin.removeSuperuserAccount);
 accounts.get('/manage/:email', authentication_1.default, manageAdmin.manageAccounts);
+accounts.get('/admin/all', authentication_1.default, manageAdmin.manageAllAdminAccounts);
 exports.default = accounts;
 //# sourceMappingURL=index.js.map

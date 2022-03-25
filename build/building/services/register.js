@@ -68,6 +68,24 @@ class BuildingRegisterServices {
             }
         });
     }
+    getUserRequests(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const userUID = req.user.uid;
+            try {
+                const account = yield accountModel.findAccountByUid(userUID);
+                if (!account) {
+                    const notFoundError = new globalErrors_1.default.NotFoundError("Account not found.");
+                    return next(notFoundError);
+                }
+                const requests = yield registerModel.getUserForms(account.userId);
+                return res.status(201).json(requests);
+            }
+            catch (error) {
+                const internalError = new globalErrors_1.default.InternalError(error.message);
+                return next(internalError);
+            }
+        });
+    }
 }
 exports.default = BuildingRegisterServices;
 //# sourceMappingURL=register.js.map

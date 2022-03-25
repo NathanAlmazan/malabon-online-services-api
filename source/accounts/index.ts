@@ -23,6 +23,7 @@ accounts.get('/admin/remove/:uid', checkCredentials, manageAdmin.removeAdminAcco
 accounts.get('/superuser/create/:uid', manageAdmin.createSuperuserAccount);
 accounts.get('/superuser/remove/:uid', checkCredentials, manageAdmin.removeSuperuserAccount);
 accounts.get('/manage/:email', checkCredentials, manageAdmin.manageAccounts);
+accounts.get('/admin/all', checkCredentials, manageAdmin.manageAllAdminAccounts);
 
 export default accounts;
 

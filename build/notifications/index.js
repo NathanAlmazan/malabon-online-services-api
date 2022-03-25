@@ -9,5 +9,6 @@ let notificationRoute = express_1.default.Router();
 const notifServices = new notificationService_1.default();
 notificationRoute.get('/user', notifServices.getUserNotifications);
 notificationRoute.get('/read/:id', notifServices.setNotificationAsRead);
+notificationRoute.get('/admin', notifServices.getAdminDashboard);
 exports.default = notificationRoute;
 //# sourceMappingURL=index.js.map

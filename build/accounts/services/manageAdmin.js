@@ -211,12 +211,35 @@ class ManageAdmin {
                     const notFoundError = new globalErrors_1.default.NotFoundError("Account does not exist.");
                     return next(notFoundError);
                 }
-                const departments = ["OLBO", "CHO", "CENRO", "OCMA", "BFP", "PZO", "TRSY", "BPLO"];
+                const departments = ["OLBO", "CHO", "CENRO", "OCMA", "BFP", "PZO", "TRSY", "BPLO", "FENCING", "ARCHITECTURAL", "STRUCTURAL", "ELECTRICAL", "MECHANICAL", "SANITARY", "PLUMBING", "INTERIOR", "ELECTRONICS"];
                 const adminRoles = adminAccount.superuser ? departments : adminAccount.roles.map(role => role.role);
                 const assessedForms = yield adminModel.getAdminApprovals(adminAccount.userId);
                 const forApproval = yield approveModel.getWeeklyRequest(adminRoles);
                 const firebaseUser = yield firebaseAuth_1.default.getUser(adminAccount.uid);
                 return res.status(201).json({ adminAccount: adminAccount, roles: adminRoles, assessed: assessedForms.length, forAssess: forApproval.length, image: firebaseUser.photoURL });
+            }
+            catch (error) {
+                const internalError = new globalErrors_1.default.InternalError(error.message);
+                return next(internalError);
+            }
+        });
+    }
+    manageAllAdminAccounts(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const adminAccount = yield adminModel.getAllAdminAccount();
+                let admins = [];
+                for (let x = 0; x < adminAccount.length; x++) {
+                    const currentAccount = adminAccount[x];
+                    const departments = ["OLBO", "CHO", "CENRO", "OCMA", "BFP", "PZO", "TRSY", "BPLO", "FENCING", "ARCHITECTURAL", "STRUCTURAL", "ELECTRICAL", "MECHANICAL", "SANITARY", "PLUMBING", "INTERIOR", "ELECTRONICS"];
+                    const adminRoles = currentAccount.superuser ? departments : currentAccount.roles.map(role => role.role);
+                    const assessedForms = yield adminModel.getAdminApprovals(currentAccount.userId);
+                    const firebaseUser = yield firebaseAuth_1.default.getUser(currentAccount.uid);
+                    admins.push({
+                        adminAccount: currentAccount, roles: adminRoles, assessed: assessedForms.length, image: firebaseUser.photoURL
+                    });
+                }
+                return res.status(201).json(admins);
             }
             catch (error) {
                 const internalError = new globalErrors_1.default.InternalError(error.message);

@@ -114,6 +114,38 @@ class Buildingregister {
 
         return buildingForm;
     }
+
+    async getUserForms(userId: number) {
+        const userForms = await prismaClient.buildingPermit.findMany({
+            where: {
+                userId: userId
+            },
+            include: {
+                approvals: {
+                    select: {
+                        approvalFee: true,
+                        approvalId: true,
+                        approvalType: true,
+                        approved: true,
+                        approvedAt: true,
+                        remarks: true,
+                        required: true,
+                        official: {
+                            select: {
+                                firstName: true,
+                                lastName: true
+                            }
+                        },
+                    }
+                },
+                files: true,
+                payments: true,
+                userAccount: true
+            }
+        })
+
+        return userForms;
+    }
 }
 
 export default Buildingregister;

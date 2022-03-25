@@ -64,6 +64,25 @@ class BuildingRegisterServices {
             return next(internalError);
         }
     }
+
+    async getUserRequests(req: Request, res: Response, next: NextFunction) {
+        const userUID = req.user.uid;
+        try {
+            const account = await accountModel.findAccountByUid(userUID);
+
+            if (!account) {
+                const notFoundError = new GlobalErrors.NotFoundError("Account not found.");
+                return next(notFoundError);
+            }
+            
+            const requests = await registerModel.getUserForms(account.userId);
+
+            return res.status(201).json(requests);
+        } catch (error) {
+            const internalError = new GlobalErrors.InternalError((error as Error).message);
+            return next(internalError);
+        }
+    }
 }
 
 export default BuildingRegisterServices;

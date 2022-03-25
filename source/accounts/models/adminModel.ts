@@ -105,6 +105,19 @@ class AdminModel {
         return adminAccount;
     }
 
+    async getAllAdminAccount() {
+        const adminAccount = await prismaClient.accounts.findMany({
+            where: {
+                officer: true
+            },
+            include: {
+                roles: true,
+            }
+        });
+
+        return adminAccount;
+    }
+
     async getAdminApprovals(accountId: number) {
         let curr = new Date; 
         let first = curr.getDate() - curr.getDay(); 
@@ -115,7 +128,6 @@ class AdminModel {
                 AND: {
                     officialId: accountId,
                     approvedAt: {
-                        gte: new Date(curr.setDate(first)),
                         lte: new Date(curr.setDate(last))
                     }
                 }

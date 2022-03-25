@@ -42,6 +42,25 @@ class NotificationService {
             return next(internalError);
         }
     }
+
+    async getAdminDashboard(req: Request, res: Response, next: NextFunction) {
+        const userUID: string = req.user.uid;
+
+        try {
+            const account = await accountModel.findAccountByUid(userUID);
+
+            if (!account) {
+                const notFoundError = new GlobalErrors.NotFoundError("Account not found.");
+                return next(notFoundError);
+            }
+            
+            const notifications = await notifModel.getWeekRequests(account.userId);
+            return res.status(200).json(notifications);
+        } catch (error) {
+            const internalError = new GlobalErrors.InternalError((error as Error).message);
+            return next(internalError);
+        }
+    }
 }
 
 export default NotificationService;
