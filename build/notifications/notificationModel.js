@@ -89,10 +89,19 @@ class NotificationModel {
                     payments: true
                 }
             });
+            const realEstate = yield prismaClient_1.default.realEstate.findMany({
+                orderBy: {
+                    submittedAt: 'desc'
+                },
+                include: {
+                    payments: true
+                }
+            });
             return {
                 business: newBusiness,
                 renew: renewBusiness,
                 building: buildingPermit,
+                realEstate: realEstate,
                 productivity: yield this.getProductivity(accountId)
             };
         });

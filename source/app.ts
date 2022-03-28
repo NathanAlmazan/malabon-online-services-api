@@ -10,6 +10,7 @@ import paymentRouter from './payments';
 import renewRoute from './business/renew';
 import buildingRoute from './building';
 import notificationRoute from './notifications';
+import realEstateRoute from './realEstate';
 
 const corsOptions = {
     origin: ['http://192.168.0.106:3000', 'http://localhost:3000', 'https://malabon.vercel.app']
@@ -31,6 +32,7 @@ app.use('/business/renew', checkCredentials, renewRoute);
 app.use('/building', checkCredentials, buildingRoute);
 app.use('/payments', checkCredentials, paymentRouter);
 app.use('/notifications', checkCredentials, notificationRoute);
+app.use("/estate", checkCredentials, realEstateRoute);
 
 
 //error handlers

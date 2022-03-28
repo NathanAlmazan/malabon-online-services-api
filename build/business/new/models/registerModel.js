@@ -222,7 +222,8 @@ class RegisterModel {
                                 }
                             }
                         }
-                    }
+                    },
+                    payments: true,
                 }
             });
             return userApplications;

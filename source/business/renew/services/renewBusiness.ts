@@ -177,6 +177,7 @@ class RenewBusiness {
 
             await businessModel.setTotalTax(businessId, tax);
             const taxOrderOfPayment = await businessModel.setTOPFile(businessId, fileURL);
+            await notifService.createNotification("Business Renewal", `Your business renewal for ${taxOrderOfPayment.businessName} is approved. Please see details of tax payment.`, taxOrderOfPayment.accountId);
 
             return res.status(200).json({ taxOrderOfPayment: taxOrderOfPayment });
 

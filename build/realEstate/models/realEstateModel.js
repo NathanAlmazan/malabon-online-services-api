@@ -12,50 +12,34 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const prismaClient_1 = __importDefault(require("../../../config/prismaClient"));
-class BusinessRenewal {
-    getBusinesses(uid) {
+const prismaClient_1 = __importDefault(require("../../config/prismaClient"));
+class RealEstateModel {
+    registerRealEstate(userId, ownerName, taxNumber, receiptFile, paymentType) {
         return __awaiter(this, void 0, void 0, function* () {
-            const businesses = yield prismaClient_1.default.businessRegistry.findMany({
-                where: {
-                    AND: {
-                        userAccount: {
-                            uid: uid,
-                        },
-                        approved: true,
-                    }
-                }
-            });
-            return businesses;
-        });
-    }
-    requestRenewalById(userId, businessId, receiptNumber, receiptFile, paymentType) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const businessRenewal = yield prismaClient_1.default.businessRenewal.create({
+            const realEstate = yield prismaClient_1.default.realEstate.create({
                 data: {
-                    businessId: businessId,
-                    receiptNumber: receiptNumber,
+                    accountId: userId,
+                    ownerName: ownerName,
+                    declarationNum: taxNumber,
                     receiptFile: receiptFile,
-                    quarterly: paymentType,
-                    accountId: userId
+                    quarterly: paymentType
                 }
             });
-            return businessRenewal;
+            return realEstate;
         });
     }
-    getRenewBusinessRequest(renewalId) {
+    getRealEstate(estateId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const renewBusiness = yield prismaClient_1.default.businessRenewal.findUnique({
+            const realEstate = yield prismaClient_1.default.realEstate.findUnique({
                 where: {
-                    renewalId: renewalId
+                    estateId: estateId,
                 },
                 include: {
-                    business: true,
                     payments: true,
                     userAccount: true
                 }
             });
-            return renewBusiness;
+            return realEstate;
         });
     }
     requestRenewalByCredentials(userId, permitId, receipt, receiptFile, paymentType, businessName) {
@@ -73,69 +57,67 @@ class BusinessRenewal {
             return businessRenewal;
         });
     }
-    getRenewalToApprove() {
+    getEstateToApprove() {
         return __awaiter(this, void 0, void 0, function* () {
-            const businessRenew = yield prismaClient_1.default.businessRenewal.findMany({
+            const realEstate = yield prismaClient_1.default.realEstate.findMany({
                 where: {
-                    completed: false
+                    AND: {
+                        completed: false,
+                        topFile: null
+                    }
                 },
                 include: {
-                    business: true,
                     payments: true
                 }
             });
-            return businessRenew.filter(business => business.topFile == null);
+            return realEstate;
         });
     }
-    setTotalTax(businessId, tax) {
+    setTotalTax(estateId, tax) {
         return __awaiter(this, void 0, void 0, function* () {
-            const businessTax = yield prismaClient_1.default.businessPayments.create({
+            const estateTax = yield prismaClient_1.default.realEstatePayments.create({
                 data: {
-                    renewalId: businessId,
-                    newBusiness: false,
+                    estateId: estateId,
                     amount: tax
                 }
             });
-            return businessTax;
+            return estateTax;
         });
     }
-    setTOPFile(businessId, fileURL) {
+    setTOPFile(estateId, fileURL) {
         return __awaiter(this, void 0, void 0, function* () {
-            const topFile = yield prismaClient_1.default.businessRenewal.update({
+            const topFile = yield prismaClient_1.default.realEstate.update({
                 where: {
-                    renewalId: businessId
+                    estateId: estateId
                 },
                 data: {
                     topFile: fileURL
                 },
                 include: {
-                    business: true
+                    payments: true
                 }
             });
             return topFile;
         });
     }
-    getRenewalRequest(userId) {
+    getRealEstateRequests(userId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const businessRenew = yield prismaClient_1.default.businessRenewal.findMany({
+            const realEstate = yield prismaClient_1.default.realEstate.findMany({
                 where: {
-                    AND: {
-                        accountId: userId
-                    }
+                    accountId: userId
                 },
                 include: {
-                    business: true,
                     payments: true
                 }
             });
-            return businessRenew;
+            return realEstate;
         });
     }
-    setClaimRenewal(renewalId, appointment, certificateFile) {
+    setClaimRenewal(estateId, appointment, certificateFile) {
         return __awaiter(this, void 0, void 0, function* () {
-            const claimed = yield prismaClient_1.default.businessRenewal.update({
+            const claimed = yield prismaClient_1.default.realEstate.update({
                 where: {
-                    renewalId: renewalId
+                    estateId: estateId
                 },
                 data: {
                     appointment: new Date(appointment),
@@ -147,18 +129,20 @@ class BusinessRenewal {
     }
     getFormsToClaim() {
         return __awaiter(this, void 0, void 0, function* () {
-            const forms = yield prismaClient_1.default.businessRenewal.findMany({
+            const forms = yield prismaClient_1.default.realEstate.findMany({
                 where: {
-                    completed: true
+                    AND: {
+                        completed: true,
+                        certificateFile: null
+                    }
                 },
                 include: {
-                    business: true,
                     payments: true
                 }
             });
-            return forms.filter(form => form.certificateFile == null);
+            return forms;
         });
     }
 }
-exports.default = BusinessRenewal;
-//# sourceMappingURL=businessModel.js.map
+exports.default = RealEstateModel;
+//# sourceMappingURL=realEstateModel.js.map

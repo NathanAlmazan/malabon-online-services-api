@@ -111,7 +111,8 @@ class BusinessRenewal {
                 }
             },
             include: {
-                business: true
+                business: true,
+                payments: true
             }
         })
 

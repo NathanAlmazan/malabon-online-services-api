@@ -79,10 +79,20 @@ class NotificationModel {
             }
         });
 
+        const realEstate = await prismaClient.realEstate.findMany({
+            orderBy: {
+                submittedAt: 'desc'
+            },
+            include: {
+                payments: true
+            }
+        });
+
         return {
             business: newBusiness,
             renew: renewBusiness,
             building: buildingPermit,
+            realEstate: realEstate,
             productivity: await this.getProductivity(accountId)
         }
     }

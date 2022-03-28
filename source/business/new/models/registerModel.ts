@@ -284,7 +284,8 @@ class RegisterModel {
                             }
                         }
                     }
-                }
+                },
+                payments: true,
             }
         })
 
