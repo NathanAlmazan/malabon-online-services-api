@@ -69,35 +69,18 @@ class RegisterModel {
                     businessId: true
                 }
             });
-            if (formData.owner.address) {
-                const ownerAddress = yield prismaClient_1.default.businessAdresses.create({
-                    data: {
-                        bldgNumber: formData.owner.address.bldgNumber,
-                        street: formData.owner.address.street,
-                        barangay: formData.owner.address.barangay,
-                        city: formData.owner.address.city,
-                        province: formData.owner.address.province,
-                        postalCode: formData.owner.address.postalCode,
-                        businessId: registeredBusiness.businessId
-                    },
-                    select: {
-                        addressId: true
-                    }
-                });
-                yield prismaClient_1.default.businessOwners.create({
-                    data: {
-                        surname: formData.owner.surname,
-                        middleName: formData.owner.middleName,
-                        givenName: formData.owner.givenName,
-                        suffix: formData.owner.suffix,
-                        gender: formData.owner.gender,
-                        citizenship: formData.owner.citizenship,
-                        businessId: registeredBusiness.businessId,
-                        owner: true,
-                        addressId: ownerAddress.addressId
-                    }
-                });
-            }
+            yield prismaClient_1.default.businessOwners.create({
+                data: {
+                    surname: formData.owner.surname,
+                    middleName: formData.owner.middleName,
+                    givenName: formData.owner.givenName,
+                    suffix: formData.owner.suffix,
+                    gender: formData.owner.gender,
+                    citizenship: formData.owner.citizenship,
+                    businessId: registeredBusiness.businessId,
+                    owner: true
+                }
+            });
             const partners = formData.partners.map(partner => ({
                 surname: partner.surname,
                 middleName: partner.middleName,

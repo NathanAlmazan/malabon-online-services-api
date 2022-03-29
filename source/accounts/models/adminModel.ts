@@ -1,9 +1,9 @@
 import prismaClient from "../../config/prismaClient";
 
 export type Role = "citizen" | "super" | "admin";
-export type Departement = "OLBO" | "CHO" | "CENRO" | "OCMA" | "BFP" | "PZO" | "TRSY" | "BPLO";
+export type Departement = "OLBO" | "CHO" | "CENRO" | "OCMA" | "BFP" | "PZO" | "TRSY" | "BPLO" | "FENCING" | "ARCHITECTURAL" | "STRUCTURAL" | "ELECTRICAL" | "MECHANICAL" | "SANITARY" | "PLUMBING" | "INTERIOR" | "ELECTRONICS";
 
-const departments: Departement[] = ["OLBO", "CHO", "CENRO", "OCMA", "BFP", "PZO", "TRSY", "BPLO"];
+const departments: Departement[] = ["OLBO", "CHO", "CENRO", "OCMA", "BFP", "PZO", "TRSY", "BPLO", "FENCING", "ARCHITECTURAL", "STRUCTURAL", "ELECTRICAL", "MECHANICAL", "SANITARY", "PLUMBING", "INTERIOR", "ELECTRONICS"];
 
 class AdminModel {
 

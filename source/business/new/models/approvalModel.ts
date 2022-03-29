@@ -1,7 +1,7 @@
 import { BusinessAdresses, BusinessApproval, BusinessOwners, BusinessPayments } from "@prisma/client";
 import prismaClient from "../../../config/prismaClient";
 
-export type Departement = "OLBO" | "CHO" | "CENRO" | "OCMA" | "BFP" | "PZO" | "TRSY" | "BPLO";
+export type Departement = "OLBO" | "CHO" | "CENRO" | "OCMA" | "BFP" | "PZO" | "TRSY" | "BPLO" | "FENCING" | "ARCHITECTURAL" | "STRUCTURAL" | "ELECTRICAL" | "MECHANICAL" | "SANITARY" | "PLUMBING" | "INTERIOR" | "ELECTRONICS";
 
 class ApprovalModel {
 

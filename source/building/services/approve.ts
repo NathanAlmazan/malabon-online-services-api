@@ -26,7 +26,7 @@ class BuildingApproveService {
 
             if (!adminRoles.officer) return res.status(400).json({ message: "Account is not an admin." });
 
-            if (adminRoles.superuser || adminRoles.roles.map(role => role.role as string).includes("BUILDING OFFICIAL")) {
+            if (adminRoles.superuser || adminRoles.officer) {
                 const forms = await approveModel.getFormsToApprove();
 
                 return res.status(200).json(forms);
