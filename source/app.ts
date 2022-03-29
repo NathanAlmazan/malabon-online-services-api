@@ -13,7 +13,7 @@ import notificationRoute from './notifications';
 import realEstateRoute from './realEstate';
 
 const corsOptions = {
-    origin: ['http://192.168.0.106:3000', 'http://localhost:3000', 'https://malabon.vercel.app']
+    origin: ['http://192.168.0.106:3000', 'http://localhost:3000', 'https://malabon.vercel.app', 'https://municipaleservices.vercel.app']
 }
 
 const app = express();
