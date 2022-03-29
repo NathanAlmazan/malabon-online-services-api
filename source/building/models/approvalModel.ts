@@ -6,7 +6,10 @@ class BuildingApprovalModel {
     async getFormsToApprove() {
         const buildingApprove = await prismaClient.buildingPermit.findMany({
             where: {
-                approved: false
+                AND: {
+                    approved: false,
+                    topFile: null
+                }
             },
             include: {
                 approvals: true,
