@@ -53,7 +53,9 @@ class Zoning {
                 const finalType: AllBusinessTypes = businessType;
                 finalType.approved = false;
 
-                finalBusinessTypes.push(finalType);
+                if (!finalBusinessTypes.find(businessType => businessType.typeName == finalType.typeName)) {
+                    finalBusinessTypes.push(finalType);
+                }
             })
 
             return res.status(200).json({
