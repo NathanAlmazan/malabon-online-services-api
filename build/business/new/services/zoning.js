@@ -94,6 +94,95 @@ class Zoning {
             }
         });
     }
+    getZoneClassifications(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const classifications = yield zoneModel.getZoneClassifications();
+                return res.status(200).json(classifications);
+            }
+            catch (error) {
+                const internalError = new globalErrors_1.default.InternalError(error.message);
+                return next(internalError);
+            }
+        });
+    }
+    createZoneClassification(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const code = req.body.code;
+            const base = req.body.base;
+            if (!code || !base) {
+                const nullArgumentError = new globalErrors_1.default.NullArgumentError("Incomplete arguments.");
+                return next(nullArgumentError);
+            }
+            try {
+                const newClassification = yield zoneModel.createZoneClassification(code, base);
+                return res.status(201).json(newClassification);
+            }
+            catch (error) {
+                const internalError = new globalErrors_1.default.InternalError(error.message);
+                return next(internalError);
+            }
+        });
+    }
+    createZoneBoundary(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const zoneId = req.body.zoneId;
+            const street = req.body.street;
+            const barangay = req.body.barangay;
+            if (!street || !barangay || !zoneId) {
+                const nullArgumentError = new globalErrors_1.default.NullArgumentError("Incomplete arguments.");
+                return next(nullArgumentError);
+            }
+            try {
+                const zone = yield zoneModel.getZoneBoundary(street, barangay);
+                if (zone) {
+                    const recordExists = new globalErrors_1.default.NullArgumentError("Record already exists.");
+                    return next(recordExists);
+                }
+                const newBoundary = yield zoneModel.createZoneBoundary(zoneId, 1, street, barangay);
+                return res.status(201).json(newBoundary);
+            }
+            catch (error) {
+                const internalError = new globalErrors_1.default.InternalError(error.message);
+                return next(internalError);
+            }
+        });
+    }
+    getBusinessTypes(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const businesses = yield zoneModel.getBusinessTypes();
+                return res.status(200).json(businesses);
+            }
+            catch (error) {
+                const internalError = new globalErrors_1.default.InternalError(error.message);
+                return next(internalError);
+            }
+        });
+    }
+    createBusinessTypes(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const type = req.body.type;
+            const zoneId = req.body.zoneId;
+            if (!type || !zoneId) {
+                const nullArgumentError = new globalErrors_1.default.NullArgumentError("Incomplete arguments.");
+                return next(nullArgumentError);
+            }
+            try {
+                const zone = yield zoneModel.getUniqieBusinessType(zoneId, type);
+                if (zone) {
+                    const recordExists = new globalErrors_1.default.NullArgumentError("Record already exists.");
+                    return next(recordExists);
+                }
+                const newZone = yield zoneModel.createBusinessTypes(type, zoneId);
+                return res.status(201).json(newZone);
+            }
+            catch (error) {
+                const internalError = new globalErrors_1.default.InternalError(error.message);
+                return next(internalError);
+            }
+        });
+    }
 }
 exports.default = Zoning;
 //# sourceMappingURL=zoning.js.map

@@ -17,7 +17,7 @@ const building_1 = __importDefault(require("./building"));
 const notifications_1 = __importDefault(require("./notifications"));
 const realEstate_1 = __importDefault(require("./realEstate"));
 const corsOptions = {
-    origin: ['http://192.168.0.106:3000', 'http://localhost:3000', 'https://malabon.vercel.app', 'https://municipaleservices.vercel.app']
+    origin: ['http://192.168.0.106:3000', 'http://localhost:3000', 'https://municipaleservices.vercel.app']
 };
 const app = (0, express_1.default)();
 dotenv_1.default.config();

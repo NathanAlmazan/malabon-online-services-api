@@ -26,6 +26,12 @@ class ZoneModel {
             return newZoneClass;
         });
     }
+    getZoneClassifications() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const zoneClasses = yield prismaClient_1.default.zoneClassification.findMany();
+            return zoneClasses;
+        });
+    }
     createZoneOverlay(code, base) {
         return __awaiter(this, void 0, void 0, function* () {
             const newZoneOverlay = yield prismaClient_1.default.zoneOverlay.create({
@@ -48,6 +54,25 @@ class ZoneModel {
             return newBusinessType;
         });
     }
+    getBusinessTypes() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const businessTypes = yield prismaClient_1.default.businessTypes.findMany();
+            return businessTypes;
+        });
+    }
+    getUniqieBusinessType(zoneId, type) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const business = yield prismaClient_1.default.businessTypes.findFirst({
+                where: {
+                    AND: {
+                        typeName: type,
+                        zoneId: zoneId
+                    }
+                }
+            });
+            return business;
+        });
+    }
     createZoneBoundary(zone, overlay, street, barangay) {
         return __awaiter(this, void 0, void 0, function* () {
             const newZoneBoundary = yield prismaClient_1.default.zoneBounderies.create({
@@ -59,6 +84,19 @@ class ZoneModel {
                 }
             });
             return newZoneBoundary;
+        });
+    }
+    getZoneBoundary(street, barangay) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const zoneBoundary = yield prismaClient_1.default.zoneBounderies.findFirst({
+                where: {
+                    AND: {
+                        street: (0, change_case_1.noCase)(street),
+                        barangay: (0, change_case_1.noCase)(barangay)
+                    }
+                }
+            });
+            return zoneBoundary;
         });
     }
     getZoneClassByCode(code) {

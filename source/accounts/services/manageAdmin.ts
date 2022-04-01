@@ -16,11 +16,6 @@ class ManageAdmin {
         const uid: string | undefined = req.body.uid;
         const roles: Departement[] | undefined = req.body.roles;
 
-        if (req.user.role != "super") {
-            const unauthorizedError = new GlobalErrors.UnauthorizedError("Unauthorize to perform this action.");
-            return next(unauthorizedError);
-        }
-
         if (!uid || !roles) {
             const nullArgumentError = new GlobalErrors.NullArgumentError("Incomplete arguments.");
             return next(nullArgumentError);
@@ -51,11 +46,6 @@ class ManageAdmin {
         const uid: string | undefined = req.body.uid;
         const roles: Departement[] | undefined = req.body.roles;
 
-        if (req.user.role != "super") {
-            const unauthorizedError = new GlobalErrors.UnauthorizedError("Unauthorize to perform this action.");
-            return next(unauthorizedError);
-        }
-
         if (!uid || !roles) {
             const nullArgumentError = new GlobalErrors.NullArgumentError("Incomplete arguments.");
             return next(nullArgumentError);
@@ -84,11 +74,6 @@ class ManageAdmin {
     async createSuperuserAccount(req: Request, res: Response, next: NextFunction) {
         const uid: string = req.params.uid;
 
-        if (req.user.role != "super") {
-            const unauthorizedError = new GlobalErrors.UnauthorizedError("Unauthorize to perform this action.");
-            return next(unauthorizedError);
-        }
-
         try {
             const account = await accountModel.findAccountByUid(uid);
 
@@ -112,11 +97,6 @@ class ManageAdmin {
 
     async getAdminAccount(req: Request, res: Response, next: NextFunction) {
         const uid: string = req.user.uid;
-
-        if (req.user.uid != uid && req.user.role != "super") {
-            const unauthorizedError = new GlobalErrors.UnauthorizedError("Unauthorize to perform this action.");
-            return next(unauthorizedError);
-        }
 
         try {
             const adminAccount = await adminModel.getAdminAccount(uid);
@@ -163,11 +143,6 @@ class ManageAdmin {
     async removeAdminAccount(req: Request, res: Response, next: NextFunction) {
         const uid: string = req.params.uid;
 
-        if (req.user.role != "super") {
-            const unauthorizedError = new GlobalErrors.UnauthorizedError("Unauthorize to perform this action.");
-            return next(unauthorizedError);
-        }
-
         try {
             const account = await accountModel.findAccountByUid(uid);
 
@@ -192,11 +167,6 @@ class ManageAdmin {
     async removeSuperuserAccount(req: Request, res: Response, next: NextFunction) {
         const uid: string = req.params.uid;
 
-        if (req.user.role != "super") {
-            const unauthorizedError = new GlobalErrors.UnauthorizedError("Unauthorize to perform this action.");
-            return next(unauthorizedError);
-        }
-
         try {
             const account = await accountModel.findAccountByUid(uid);
 
@@ -220,11 +190,6 @@ class ManageAdmin {
 
     async manageAccounts(req: Request, res: Response, next: NextFunction) {
         const email: string = req.params.email;
-
-        if (req.user.role != "super") {
-            const unauthorizedError = new GlobalErrors.UnauthorizedError("Unauthorize to perform this action.");
-            return next(unauthorizedError);
-        }
 
         try {
             const adminAccount = await adminModel.getAdminAccountByEmail(email);

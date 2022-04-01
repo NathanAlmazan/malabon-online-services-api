@@ -12,6 +12,11 @@ const claimPermitService = new ClaimPermit();
 
 businessRegister.post('/zone/get', zoneService.getZoneClassByLocation);
 businessRegister.get('/zone/initialize', zoneService.initializeRecord);
+businessRegister.get('/zone/classes', zoneService.getZoneClassifications);
+businessRegister.get('/zone/businesses', zoneService.getBusinessTypes);
+businessRegister.post('/zone/class', zoneService.createZoneClassification);
+businessRegister.post('/zone/business', zoneService.createBusinessTypes);
+businessRegister.post('/zone/boundary', zoneService.createZoneBoundary);
 
 businessRegister.post('/form/submit', registerService.submitForm);
 businessRegister.get('/form/search/:id', registerService.getSubmittedForm);

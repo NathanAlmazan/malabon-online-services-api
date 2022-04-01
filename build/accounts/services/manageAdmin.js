@@ -25,10 +25,6 @@ class ManageAdmin {
         return __awaiter(this, void 0, void 0, function* () {
             const uid = req.body.uid;
             const roles = req.body.roles;
-            if (req.user.role != "super") {
-                const unauthorizedError = new globalErrors_1.default.UnauthorizedError("Unauthorize to perform this action.");
-                return next(unauthorizedError);
-            }
             if (!uid || !roles) {
                 const nullArgumentError = new globalErrors_1.default.NullArgumentError("Incomplete arguments.");
                 return next(nullArgumentError);
@@ -55,10 +51,6 @@ class ManageAdmin {
         return __awaiter(this, void 0, void 0, function* () {
             const uid = req.body.uid;
             const roles = req.body.roles;
-            if (req.user.role != "super") {
-                const unauthorizedError = new globalErrors_1.default.UnauthorizedError("Unauthorize to perform this action.");
-                return next(unauthorizedError);
-            }
             if (!uid || !roles) {
                 const nullArgumentError = new globalErrors_1.default.NullArgumentError("Incomplete arguments.");
                 return next(nullArgumentError);
@@ -83,10 +75,6 @@ class ManageAdmin {
     createSuperuserAccount(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             const uid = req.params.uid;
-            if (req.user.role != "super") {
-                const unauthorizedError = new globalErrors_1.default.UnauthorizedError("Unauthorize to perform this action.");
-                return next(unauthorizedError);
-            }
             try {
                 const account = yield accountModel.findAccountByUid(uid);
                 if (!account) {
@@ -108,10 +96,6 @@ class ManageAdmin {
     getAdminAccount(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             const uid = req.user.uid;
-            if (req.user.uid != uid && req.user.role != "super") {
-                const unauthorizedError = new globalErrors_1.default.UnauthorizedError("Unauthorize to perform this action.");
-                return next(unauthorizedError);
-            }
             try {
                 const adminAccount = yield adminModel.getAdminAccount(uid);
                 if (!adminAccount) {
@@ -151,10 +135,6 @@ class ManageAdmin {
     removeAdminAccount(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             const uid = req.params.uid;
-            if (req.user.role != "super") {
-                const unauthorizedError = new globalErrors_1.default.UnauthorizedError("Unauthorize to perform this action.");
-                return next(unauthorizedError);
-            }
             try {
                 const account = yield accountModel.findAccountByUid(uid);
                 if (!account) {
@@ -176,10 +156,6 @@ class ManageAdmin {
     removeSuperuserAccount(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             const uid = req.params.uid;
-            if (req.user.role != "super") {
-                const unauthorizedError = new globalErrors_1.default.UnauthorizedError("Unauthorize to perform this action.");
-                return next(unauthorizedError);
-            }
             try {
                 const account = yield accountModel.findAccountByUid(uid);
                 if (!account) {
@@ -201,10 +177,6 @@ class ManageAdmin {
     manageAccounts(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             const email = req.params.email;
-            if (req.user.role != "super") {
-                const unauthorizedError = new globalErrors_1.default.UnauthorizedError("Unauthorize to perform this action.");
-                return next(unauthorizedError);
-            }
             try {
                 const adminAccount = yield adminModel.getAdminAccountByEmail(email);
                 if (!adminAccount) {
