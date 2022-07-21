@@ -26,8 +26,9 @@ class Zoning {
 
         try {
             const zoneBoundary = await zoneModel.getZoneByLocation(street, barangay);
+            const ids = zoneBoundary.map(z => z.zoneId);
 
-            if (!zoneBoundary) {
+            if (zoneBoundary.length === 0) {
                 const businessTypes = await zoneModel.getBusinessTypesByZone();
 
                 return res.status(200).json({
@@ -37,8 +38,8 @@ class Zoning {
                 });
             }
 
-            const businessTypes = await zoneModel.getBusinessTypesByZone(zoneBoundary.zoneId);
-            const allBusinessTypes = await zoneModel.getAllBusinessTypes(zoneBoundary.zoneId);
+            const businessTypes = await zoneModel.getBusinessTypesByZone(ids);
+            const allBusinessTypes = await zoneModel.getAllBusinessTypes(ids);
 
             let finalBusinessTypes: AllBusinessTypes[] = [];
 
@@ -59,8 +60,8 @@ class Zoning {
             })
 
             return res.status(200).json({
-                zone: zoneBoundary.zone,
-                overlay: zoneBoundary.zoneOverlay,
+                zone: zoneBoundary[0].zone,
+                overlay: zoneBoundary[0].zoneOverlay,
                 businessTypes: finalBusinessTypes
             });
 

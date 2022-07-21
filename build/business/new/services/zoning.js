@@ -30,7 +30,8 @@ class Zoning {
             }
             try {
                 const zoneBoundary = yield zoneModel.getZoneByLocation(street, barangay);
-                if (!zoneBoundary) {
+                const ids = zoneBoundary.map(z => z.zoneId);
+                if (zoneBoundary.length === 0) {
                     const businessTypes = yield zoneModel.getBusinessTypesByZone();
                     return res.status(200).json({
                         zone: null,
@@ -38,8 +39,8 @@ class Zoning {
                         businessTypes: businessTypes
                     });
                 }
-                const businessTypes = yield zoneModel.getBusinessTypesByZone(zoneBoundary.zoneId);
-                const allBusinessTypes = yield zoneModel.getAllBusinessTypes(zoneBoundary.zoneId);
+                const businessTypes = yield zoneModel.getBusinessTypesByZone(ids);
+                const allBusinessTypes = yield zoneModel.getAllBusinessTypes(ids);
                 let finalBusinessTypes = [];
                 businessTypes.forEach(businessType => {
                     const finalType = businessType;
@@ -54,8 +55,8 @@ class Zoning {
                     }
                 });
                 return res.status(200).json({
-                    zone: zoneBoundary.zone,
-                    overlay: zoneBoundary.zoneOverlay,
+                    zone: zoneBoundary[0].zone,
+                    overlay: zoneBoundary[0].zoneOverlay,
                     businessTypes: finalBusinessTypes
                 });
             }

@@ -97,21 +97,12 @@ class ZoneModel {
     }
 
     async getZoneByLocation(street: string, barangay: string) {
-        const streetDetails: string[] = street.split(' ');
+        const streetDetails: string[] = street.split(' ')
 
-        const streetQueries = streetDetails.map(str => ({
-            street: {
-                contains: noCase(str)
-            }
-        }));
-
-        const zoneBoundary = await prismaClient.zoneBounderies.findFirst({
+        const zoneBoundary = await prismaClient.zoneBounderies.findMany({
             where: {
-                AND: {
-                    barangay: {
-                        contains: noCase(barangay)
-                    },
-                    OR: streetQueries
+                street: {
+                    contains: noCase(streetDetails[1])
                 }
             },
             include: {
@@ -123,21 +114,21 @@ class ZoneModel {
         return zoneBoundary;
     } 
 
-    async getBusinessTypesByZone(zone?: number) {
+    async getBusinessTypesByZone(zone?: number[]) {
         const businessTypes = await prismaClient.businessTypes.findMany({
             where: {
-                zoneId: zone
+                zoneId: { in: zone }
             }
         })
 
         return businessTypes;
     }
 
-    async getAllBusinessTypes(zone: number) {
+    async getAllBusinessTypes(zone: number[]) {
         const businessTypes = await prismaClient.businessTypes.findMany({
             where: {
                 NOT: {
-                    zoneId: zone
+                    zoneId: { in: zone }
                 }
             }
         })

@@ -112,18 +112,10 @@ class ZoneModel {
     getZoneByLocation(street, barangay) {
         return __awaiter(this, void 0, void 0, function* () {
             const streetDetails = street.split(' ');
-            const streetQueries = streetDetails.map(str => ({
-                street: {
-                    contains: (0, change_case_1.noCase)(str)
-                }
-            }));
-            const zoneBoundary = yield prismaClient_1.default.zoneBounderies.findFirst({
+            const zoneBoundary = yield prismaClient_1.default.zoneBounderies.findMany({
                 where: {
-                    AND: {
-                        barangay: {
-                            contains: (0, change_case_1.noCase)(barangay)
-                        },
-                        OR: streetQueries
+                    street: {
+                        contains: (0, change_case_1.noCase)(streetDetails[1])
                     }
                 },
                 include: {
@@ -138,7 +130,7 @@ class ZoneModel {
         return __awaiter(this, void 0, void 0, function* () {
             const businessTypes = yield prismaClient_1.default.businessTypes.findMany({
                 where: {
-                    zoneId: zone
+                    zoneId: { in: zone }
                 }
             });
             return businessTypes;
@@ -149,7 +141,7 @@ class ZoneModel {
             const businessTypes = yield prismaClient_1.default.businessTypes.findMany({
                 where: {
                     NOT: {
-                        zoneId: zone
+                        zoneId: { in: zone }
                     }
                 }
             });
