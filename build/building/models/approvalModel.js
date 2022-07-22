@@ -18,7 +18,10 @@ class BuildingApprovalModel {
         return __awaiter(this, void 0, void 0, function* () {
             const buildingApprove = yield prismaClient_1.default.buildingPermit.findMany({
                 where: {
-                    approved: false
+                    AND: {
+                        approved: false,
+                        topFile: null
+                    }
                 },
                 include: {
                     approvals: true,
